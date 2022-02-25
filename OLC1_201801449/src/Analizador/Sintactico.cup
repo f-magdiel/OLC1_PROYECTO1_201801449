@@ -1,3 +1,252 @@
 package Analizador;
 import java.cup.runtime.Sym;
 import java.util.LinkedList;
+
+//code para el parser,variables y metodos
+parser code
+{:
+    public static LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
+    //metodo para algun error sintactico
+    public void syntax_error (Sym s){
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+    
+        System.out.println("!Error Sintactico Recuperado!");
+        System.out.println("\t\tLexema: "+lexema);
+        System.out.println("\t\tFila: "+fila);
+        System.out.println("\t\tColumna: "+columna);
+        
+        TError errores = new TError(lexema,fila,columna,"Error Sintactico","Caracter No Esperado");
+        TablaErrorSintactico.add(errores);
+    }
+
+    //Metodo cuando ya no se recupera de los errores
+    public void unrecovered_syntax_error (Symbol s)throws java.lang.Exception{
+    
+        String lexema = s.value.toString();
+        int fila = s.right;
+        int columna = s.left;
+    
+        System.out.println("!!!!!!Error sintactico, panic mode!!!!!!!!");
+        System.out.println("\t\tLexema: "+lexema);
+        System.out.println("\t\tFila: "+fila);
+        System.out.println("\t\tColumna: "+columna);
+
+        TError errores = new TError(lexema,fila,columna,"Error Sintactico","Caracter No Esperado");
+        TablaErrorSintactico.add(errores);
+    }
+:}
+
+//codigo para --> acciones gramaticals
+
+action code
+{:
+:}
+//terminales
+terminal String conj,admiracion,comdob,numeral,dolar,porcentaje,ampersand,comsimp,comsimp,nuevalinea,parder,parizq;
+terminal String asterisco,mas,coma,guion,punto,diagonal,doblepto,ptocoma,menorque,igual,mayorque,interrogacion,arroba;
+terminal String corcheteizq,diagonalinv,corcheteder,potencia,guionbajo,apostrofe,llaveizq,barra,llaveder,rango,entero;
+terminal String mayus,minus,identificador;
+
+//no terminales
+non terminal OEF,START,PROGRAM,EXPRESIONES,VALIDACIONES,EVALUACION,DEFINICION,EXPRESIONREGULAR,ER,EXPRESION,ERDEFINICION,CONJUNTO,DEFINICIONCONJ,ASIGNACIONCONJ,LISTADEVALORES,IDCONJUNTO,COMPROBACION,SIMBOLOER,INTERVALO,CARACTER,SIMBOLOCONJ;
+
+start with START;
+
+START::=  llaveizq PROGRAM llaveder 
+        | llaveizq PROGRAM llaveder EOF
+        | /* Empty */
+         ;
+
+PROGRAM::= EXPRESIONES porcentaje porcentaje porcentaje porcentaje VALIDACIONES
+         ;
+
+EXPRESIONES::= DEFINICION
+         |     EXPRESIONES DEFINICION
+         ;
+
+VALIDACIONES::= EVALUACION
+         |      VALIDACIONES EVALUACION
+         ;
+
+EVALUACION::=   CONJUNTO
+         |      COMPROBACION ptocoma
+         | error ptocoma
+         ;
+
+DEFINICION::=   CONJUNTO
+         |      EXPRESIONREGULAR ptocoma
+         | error ptocoma
+         ;
+
+EXPRESIONREGULAR::= ERDEFINICION
+         |      EXPRESIONREGULAR ERDEFINICION
+         ;
+
+ERDEFINICION::=  identificador:nameEr guion mayorque EXPRESION
+        {:
+            concatenaexpresion = concatenaexpresion.replace("\\\"","\"\\\"\"").replace("\\n","\"\\n\"").replace("\\\'","\"\\\'\"");
+            //LISTADO_EXPRESIONES.add(new ExpresionesRegulares(nameEr,concatenaexpresion));
+            System.out.println("ER: " + nameEr + "DEF: "+ concatenaexpresion );
+            concatenaexpresion="";
+        :}
+         ;
+
+EXPRESION::=    ER:erdef
+         {:concatenaexpresion+=erdef;:}
+         |      EXPRESION ER:erdef
+         {:concatenaexpresion+=erdef;:}
+         ;
+
+ER::=       SIMBOLOER:erdef1
+         {: RESULT = erdef1;:}
+         |  IDCONJUNTO:erdef2
+         {: RESULT= erdef3;:}
+         |  nuevalinea:erdef3
+         {: RESULT= erdef3;:}
+         |  comdob:erdef3
+         {: RESULT= erdef3;:}
+         |  comsimp:erdef3
+         {: RESULT= erdef3;:}
+         ;
+
+CONJUNTO::=     conj Dpto DEFINICIONCONJ 
+         ;
+
+DEFINICIONCONJ::=   identificador:nameConj guion mayorque ASIGNACIONCONJ:defconj ptocoma
+        {:
+            System.out.println("CONJ: "+nameConj+" DEF: "+concatenaconjunto);
+            //LISTADO_CONJUNTOS.add(new conjuntos(nameConj,concatenaconjunto));-----> crear su lista
+            concatenaconjunto="";
+        :}
+         ;
+
+ASIGNACIONCONJ::=   INTERVALO
+         |          LISTADEVALORES
+         ;
+
+LISTADEVALORES::=   CARACTER:charr
+         {:concatenaconjunto+= charr;:}
+         |          LISTADEVALORES coma:com CARACTER:charr
+         {:concatenaconjunto+= com+charr;:}
+         ;
+
+IDCONJUNTO::=       llaveizq:la identificador:idc llaveder:lc
+        {:  RESULT= la + idc + lc; :}
+         ;
+
+COMPROBACION::=     identificador:nameval Dpto cadenasc:lexemval 
+        {:
+                    System.out.println("VAL: "+nameval+" DEF: "+lexemval.substring(1,lexemval.length()-1));
+                    //LISTADO_LEXEMAS.add(new Lexemas(nameval,lexemval.substring(1,lexemval.length()-1)));
+               
+        :}
+        ;
+
+INTERVALO::=    entero:a rango:union entero:b
+         {:concatenaconjunto+= a+union+b;:}
+         |      minus:a rango:union minus:b
+         {:concatenaconjunto+= a+union+b;:}
+         |      mayus:a rango:union mayus:b
+         {:concatenaconjunto+= a+union+b;:}
+         |      SIMBOLOCONJ:a rango:union SIMBOLOCONJ:b
+         {:concatenaconjunto+= a+union+b;:}
+         ;
+
+CARACTER::=     entero:charr
+         {:RESULT= charr;:}
+         |      minus:charr
+         {:RESULT= charr;:}
+         |      mayus:charr
+         {:RESULT= charr;:}
+         |      SIMBOLOCONJ:charr
+         {:RESULT= charr;:}
+         ;
+
+SIMBOLOCONJ::= admiracion:simb       //!
+            {:RESULT=simb;:}  
+            |  comdob:simb         // /"
+            {:RESULT=simb;:}
+            |  numeral:simb          //#
+            {:RESULT=simb;:}
+            |  dolar:simb            //$
+            {: RESULT=simb;:}
+            |  porcentaje:simb       //% 
+            {:RESULT=simb;:}
+            |  ampersand:simb             //&
+            {:RESULT=simb;:}
+            |  comsimp:simb         // /'
+            {:RESULT=simb;:}
+            |  parizq:simb      //(
+            {:RESULT=simb;:}
+            |  parder:simb      //)
+            {: RESULT=simb;:}
+            |  asterisco:simb        //*
+            {:RESULT=simb;:}
+            |  mas:simb             //+
+            {:RESULT=simb;:}
+            |  coma:simb             //,
+            {:RESULT=simb;:}
+            |  guion:simb           //-
+            {: RESULT=simb;:}
+            |  punto:simb              //.
+            {: RESULT=simb;:}
+            |  doblepto:simb             //:
+            {: RESULT=simb;:}
+            |  diagonal:simb         ///
+            {:RESULT=simb;:}
+            |  ptocoma:simb          //;
+            {:RESULT=simb;:}
+            |  menorque:simb           //<
+            {: RESULT=simb;:}
+            |  igual:simb            //=
+            {:RESULT=simb;:}
+            |  mayorque:simb           //>
+            {: RESULT=simb;:}
+            |  interrogacion:simb    //?
+            {:RESULT=simb;:}
+            |  arroba:simb           //@
+            {:RESULT=simb;:}
+            |  corcheteizq:simb        //[
+            {: RESULT=simb;:}
+            |  diagonalinv:simb        //\
+            {:RESULT=simb;:}
+            |  corcheteder :simb       //]
+            {:RESULT=simb;:}
+            |  potencia:simb         //^
+            {: RESULT=simb;:}
+            |  guionbajo:simb           //_
+            {:RESULT=simb;:}
+            |  apostrofe:simb        //`
+            {: RESULT=simb;:}
+            |  llaveizq:simb           //{
+            {:RESULT=simb;:}
+            |  barra:simb               //|
+            {: RESULT=simb;:}
+            |  llaveder:simb           //}
+            {:RESULT=simb;:}
+            | nuevalinea:simb        // /n
+            {:RESULT=simb;:}
+            ;
+
+SIMBOLOER::=   punto:charer       
+            {: RESULT=charer;:}   
+            |  barra:charer   
+            {: RESULT=charer;:}
+            |  asterisco:charer  
+            {: RESULT=charer;:}   
+            |  mas:charer   
+            {: RESULT=charer;:}       
+            |  interrogacion:charer 
+            {: RESULT=charer;:}
+            ;
+
+
+
+
+
+
+
+
+

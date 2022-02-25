@@ -8,7 +8,7 @@ import java.util.LinkedList;
 &{
     //code java
     //lista enlaza para los errores lexicos
-    public static LinkedList<TError> TablaError = new LinkedList<TError>();
+    public static LinkedList<TError> TablaErrorLexico = new LinkedList<TError>();
 %}
 
 %public
@@ -60,7 +60,7 @@ COMENTARIO_D = "<!"~"!>"
                     return new Symbol(Sym.comdob,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> "\""      printL("Encontro: ["+yytext()+"]");
-                    return new Symbol(Sym.comdobj,yyline,(int) yychar, yytext());}
+                    return new Symbol(Sym.comdob,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> "#"      printL("Encontro: ["+yytext()+"]");
                     return new Symbol(Sym.numeral,yyline,(int) yychar, yytext());}
@@ -84,10 +84,10 @@ COMENTARIO_D = "<!"~"!>"
                     return new Symbol(Sym.nuevalinea,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> "("      printL("Encontro: ["+yytext()+"]");
-                    return new Symbol(Sym.parder,yyline,(int) yychar, yytext());}
+                    return new Symbol(Sym.parizq,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> ")"      printL("Encontro: ["+yytext()+"]");
-                    return new Symbol(Sym.parizq,yyline,(int) yychar, yytext());}
+                    return new Symbol(Sym.parder,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> "*"      printL("Encontro: ["+yytext()+"]");
                     return new Symbol(Sym.asterisco,yyline,(int) yychar, yytext());}
@@ -153,7 +153,7 @@ COMENTARIO_D = "<!"~"!>"
                     return new Symbol(Sym.barra,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> "}"      printL("Encontro: ["+yytext()+"]");
-                    return new Symbol(Sym.llavederj,yyline,(int) yychar, yytext());}
+                    return new Symbol(Sym.llaveder,yyline,(int) yychar, yytext());}
 
 <YYINITIAL> {RANGO}      printL("Encontro: ["+yytext()+"]");
                     return new Symbol(Sym.rango,yyline,(int) yychar, yytext());}
@@ -180,6 +180,6 @@ COMENTARIO_D = "<!"~"!>"
 <YYINITIAL> . {
              printL("Lexical error: "+yytext()+", Row: "+yyline+", Col: "+yycolumn);
              TError errores = new TError(yytext,yyline,yycolumn,"Error Lexico","Simbolo no existe");
-             TablaError.add(errores);
+             TablaErrorLexico.add(errores);
 }
 
