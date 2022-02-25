@@ -3,6 +3,7 @@ import Analizador.parser;
 import Analizador.scanner;
 import java.io.BufferedReader;
 import java.io.StringReader;
+import App.App;
 /**
  *
  * @author magdi
@@ -10,11 +11,16 @@ import java.io.StringReader;
 public class Menu {
     public static void main(String[]args){
         
+        App menu = new App();
+        menu.setVisible(true);
         try{
             String entrada = "{\n" +
+            "<! este es un un comentario\n"+
+            "en nuestro programan"+
+            "!>\n"+
             "////// CONJUNTOS\n" +
             "CONJ: letra -> a~z;\n" +
-            "CONJ: digito -> 0~9;\n" +
+            "CONJ: digito -> 3,4;\n" +
             "/////// EXPRESIONES REGULARES\n" +
             "ExpReg1 -> . {letra} * | \"_\" | {letra} {digito};\n" +
             "ExpresionReg2 -> . {digito} . \".\" + {digito};\n" +
