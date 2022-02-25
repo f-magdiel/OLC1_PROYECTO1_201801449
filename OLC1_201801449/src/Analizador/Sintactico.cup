@@ -1,13 +1,17 @@
 package Analizador;
-import java.cup.runtime.Sym;
+import java_cup.runtime.Symbol;
 import java.util.LinkedList;
 
 //code para el parser,variables y metodos
 parser code
 {:
     public static LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
+    //VARIABLES QUE RECUPERAN LAS EXPRESIONES
+    public String concatenaconjunto ="";
+    public String concatenaexpresion="";
+
     //metodo para algun error sintactico
-    public void syntax_error (Sym s){
+    public void syntax_error (Symbol s){
         String lexema = s.value.toString();
         int fila = s.right;
         int columna = s.left;
@@ -44,13 +48,13 @@ action code
 {:
 :}
 //terminales
-terminal String conj,admiracion,comdob,numeral,dolar,porcentaje,ampersand,comsimp,comsimp,nuevalinea,parder,parizq;
-terminal String asterisco,mas,coma,guion,punto,diagonal,doblepto,ptocoma,menorque,igual,mayorque,interrogacion,arroba;
+terminal String conj,admiracion,comdob,numeral,dolar,porcentaje,ampersand,comsimp,nuevalinea,parder,parizq;
+terminal String asterisco,suma,coma,guion,punto,diagonal,doblepto,ptocoma,menorque,igual,mayorque,interrogacion,arroba;
 terminal String corcheteizq,diagonalinv,corcheteder,potencia,guionbajo,apostrofe,llaveizq,barra,llaveder,rango,entero;
-terminal String mayus,minus,identificador;
+terminal String mayus,minus,identificador,cadenasc;
 
 //no terminales
-non terminal OEF,START,PROGRAM,EXPRESIONES,VALIDACIONES,EVALUACION,DEFINICION,EXPRESIONREGULAR,ER,EXPRESION,ERDEFINICION,CONJUNTO,DEFINICIONCONJ,ASIGNACIONCONJ,LISTADEVALORES,IDCONJUNTO,COMPROBACION,SIMBOLOER,INTERVALO,CARACTER,SIMBOLOCONJ;
+non terminal EOF,START,PROGRAM,EXPRESIONES,VALIDACIONES,EVALUACION,DEFINICION,EXPRESIONREGULAR,ER,EXPRESION,ERDEFINICION,CONJUNTO,DEFINICIONCONJ,ASIGNACIONCONJ,LISTADEVALORES,IDCONJUNTO,COMPROBACION,SIMBOLOER,INTERVALO,CARACTER,SIMBOLOCONJ;
 
 start with START;
 
@@ -102,6 +106,8 @@ EXPRESION::=    ER:erdef
 ER::=       SIMBOLOER:erdef1
          {: RESULT = erdef1;:}
          |  IDCONJUNTO:erdef2
+         {: RESULT = erdef2;:}
+         |  cadenasc:erdef3
          {: RESULT= erdef3;:}
          |  nuevalinea:erdef3
          {: RESULT= erdef3;:}
@@ -111,7 +117,7 @@ ER::=       SIMBOLOER:erdef1
          {: RESULT= erdef3;:}
          ;
 
-CONJUNTO::=     conj Dpto DEFINICIONCONJ 
+CONJUNTO::=     conj doblepto DEFINICIONCONJ 
          ;
 
 DEFINICIONCONJ::=   identificador:nameConj guion mayorque ASIGNACIONCONJ:defconj ptocoma
@@ -136,7 +142,7 @@ IDCONJUNTO::=       llaveizq:la identificador:idc llaveder:lc
         {:  RESULT= la + idc + lc; :}
          ;
 
-COMPROBACION::=     identificador:nameval Dpto cadenasc:lexemval 
+COMPROBACION::=     identificador:nameval doblepto cadenasc:lexemval 
         {:
                     System.out.println("VAL: "+nameval+" DEF: "+lexemval.substring(1,lexemval.length()-1));
                     //LISTADO_LEXEMAS.add(new Lexemas(nameval,lexemval.substring(1,lexemval.length()-1)));
@@ -184,7 +190,7 @@ SIMBOLOCONJ::= admiracion:simb       //!
             {: RESULT=simb;:}
             |  asterisco:simb        //*
             {:RESULT=simb;:}
-            |  mas:simb             //+
+            |  suma:simb             //+
             {:RESULT=simb;:}
             |  coma:simb             //,
             {:RESULT=simb;:}
@@ -236,7 +242,7 @@ SIMBOLOER::=   punto:charer
             {: RESULT=charer;:}
             |  asterisco:charer  
             {: RESULT=charer;:}   
-            |  mas:charer   
+            |  suma:charer   
             {: RESULT=charer;:}       
             |  interrogacion:charer 
             {: RESULT=charer;:}
