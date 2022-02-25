@@ -91,7 +91,7 @@ EXPRESIONREGULAR::= ERDEFINICION
 ERDEFINICION::=  identificador:nameEr guion mayorque EXPRESION
         {:
             concatenaexpresion = concatenaexpresion.replace("\\\"","\"\\\"\"").replace("\\n","\"\\n\"").replace("\\\'","\"\\\'\"");
-            //LISTADO_EXPRESIONES.add(new ExpresionesRegulares(nameEr,concatenaexpresion));
+            //--->lista o array
             System.out.println("ER: " + nameEr + "DEF: "+ concatenaexpresion );
             concatenaexpresion="";
         :}
@@ -123,7 +123,7 @@ CONJUNTO::=     conj doblepto DEFINICIONCONJ
 DEFINICIONCONJ::=   identificador:nameConj guion mayorque ASIGNACIONCONJ:defconj ptocoma
         {:
             System.out.println("CONJ: "+nameConj+" DEF: "+concatenaconjunto);
-            //LISTADO_CONJUNTOS.add(new conjuntos(nameConj,concatenaconjunto));-----> crear su lista
+            //--->lista o array
             concatenaconjunto="";
         :}
          ;
@@ -145,7 +145,7 @@ IDCONJUNTO::=       llaveizq:la identificador:idc llaveder:lc
 COMPROBACION::=     identificador:nameval doblepto cadenasc:lexemval 
         {:
                     System.out.println("VAL: "+nameval+" DEF: "+lexemval.substring(1,lexemval.length()-1));
-                    //LISTADO_LEXEMAS.add(new Lexemas(nameval,lexemval.substring(1,lexemval.length()-1)));
+                    //--->lista o array
                
         :}
         ;
