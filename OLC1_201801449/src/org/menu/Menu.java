@@ -13,7 +13,7 @@ public class Menu {
         
         App menu = new App();
         menu.setVisible(true);
-        try{
+        /*try{
             String entrada = "{\n" +
             "<! este es un un comentario\n"+
             "en nuestro programan"+
@@ -39,6 +39,6 @@ public class Menu {
             System.out.println("Finaliza analisis...");
         }catch(Exception ex){
             ex.printStackTrace();
-        }
+        }*/
     }
 }
