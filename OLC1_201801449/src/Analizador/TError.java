@@ -15,4 +15,24 @@ public class TError {
         this.tipo = tip;
         this.descripcion = des;
     }
+    
+    public String getLexema(){
+        return this.lexema;
+    }
+    
+    public String getTipo(){
+        return this.tipo;
+    }
+    
+    public String getDescripcion(){
+        return this.descripcion;
+    }
+    
+    public int getLinea(){
+        return this.linea;
+    }
+    
+    public int getColumna(){
+        return this.columna;
+    }
 }

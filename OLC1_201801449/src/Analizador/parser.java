@@ -7,6 +7,11 @@ package Analizador;
 
 import java_cup.runtime.Symbol;
 import java.util.LinkedList;
+import Analizador.TError;
+import Analizador.TLexemas;
+import Analizador.TExpresiones;
+import Analizador.TConjunto;
+import App.App.*;
 import java_cup.runtime.XMLElement;
 
 /** CUP v0.11b 20160615 (GIT 4ac7450) generated parser.
@@ -265,7 +270,12 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
 
-    public static LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
+    
+    public LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
+    public LinkedList<TExpresiones> TablaExpresion = new LinkedList<TExpresiones>();
+    public LinkedList<TConjunto> TablaConjunto = new LinkedList<TConjunto>();
+    public LinkedList<TLexemas> TablaLexema = new LinkedList<TLexemas>();
+
     //VARIABLES QUE RECUPERAN LAS EXPRESIONES
     public String concatenaconjunto ="";
     public String concatenaexpresion="";
@@ -496,7 +506,8 @@ class CUP$parser$actions {
 		String nameEr = (String)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-3)).value;
 		
             concatenaexpresion = concatenaexpresion.replace("\\\"","\"\\\"\"").replace("\\n","\"\\n\"").replace("\\\'","\"\\\'\"");
-            //LISTADO_EXPRESIONES.add(new ExpresionesRegulares(nameEr,concatenaexpresion));
+            TExpresiones expresion = new TExpresiones (nameEr,concatenaexpresion);
+            TablaExpresion.add(expresion);
             System.out.println("ER: " + nameEr + "DEF: "+ concatenaexpresion );
             concatenaexpresion="";
         
@@ -621,7 +632,8 @@ class CUP$parser$actions {
 		Object defconj = (Object)((java_cup.runtime.Symbol) CUP$parser$stack.elementAt(CUP$parser$top-1)).value;
 		
             System.out.println("CONJ: "+nameConj+" DEF: "+concatenaconjunto);
-            //LISTADO_CONJUNTOS.add(new conjuntos(nameConj,concatenaconjunto));-----> crear su lista
+            TConjunto conjunto = new TConjunto (nameConj,concatenaconjunto);
+            TablaConjunto.add(conjunto);
             concatenaconjunto="";
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("DEFINICIONCONJ",12, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-4)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);
@@ -703,7 +715,8 @@ class CUP$parser$actions {
 		String lexemval = (String)((java_cup.runtime.Symbol) CUP$parser$stack.peek()).value;
 		
                     System.out.println("VAL: "+nameval+" DEF: "+lexemval.substring(1,lexemval.length()-1));
-                    //LISTADO_LEXEMAS.add(new Lexemas(nameval,lexemval.substring(1,lexemval.length()-1)));
+                    TLexemas lexe = new TLexemas(nameval,lexemval.substring(1,lexemval.length()-1));
+                    TablaLexema.add(lexe);
                
         
               CUP$parser$result = parser.getSymbolFactory().newSymbol("COMPROBACION",16, ((java_cup.runtime.Symbol)CUP$parser$stack.elementAt(CUP$parser$top-2)), ((java_cup.runtime.Symbol)CUP$parser$stack.peek()), RESULT);

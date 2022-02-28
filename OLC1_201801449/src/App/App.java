@@ -12,11 +12,22 @@ import java.io.FileInputStream;
 import java.io.DataInputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
+import Analizador.parser;
+import Analizador.scanner;
+import java.io.StringReader;
+import java.util.LinkedList;
+import Analizador.TLexemas;
+import Analizador.TConjunto;
+import Analizador.TExpresiones;
+import Analizador.TError;
+
 /**
  *
  * @author magdi
  */
 public class App extends javax.swing.JFrame {
+    // listas
+   
     
     //variables para la lectura de archviso .exp
     public String ruta; // guarda la ruta
@@ -184,12 +195,27 @@ public class App extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
     
-    //METODOS 
+    //**********************************METODOS***********************************
     public void analizarEntrada(){
         if(!"".equals(lines.pane.getText())){
-            System.out.println("Si hay texto"); // obtener textos en jpanel
+            this.texto = lines.pane.getText();
+            this.enviarAnalisis(texto);
         }else{
             JOptionPane.showMessageDialog(null, "No hay texto a analizar","Error En Area de Texto",JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void enviarAnalisis(String texto){
+        
+        try{
+            System.out.println("Iniciando analisis....");
+            scanner scan = new scanner(new BufferedReader(new StringReader(texto)));
+            parser parser = new parser(scan);
+            parser.parse();
+            System.out.println("Finaliza analisis...");
+            System.out.println(parser.TablaLexema.get(0).getNombre());
+        }catch(Exception ex){
+            ex.printStackTrace();
         }
     }
     /**

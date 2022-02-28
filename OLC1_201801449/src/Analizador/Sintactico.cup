@@ -1,11 +1,20 @@
 package Analizador;
 import java_cup.runtime.Symbol;
 import java.util.LinkedList;
-
+import Analizador.TError;
+import Analizador.TLexemas;
+import Analizador.TExpresiones;
+import Analizador.TConjunto;
+import App.App.*;
 //code para el parser,variables y metodos
 parser code
 {:
-    public static LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
+    
+    public LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
+    public LinkedList<TExpresiones> TablaExpresion = new LinkedList<TExpresiones>();
+    public LinkedList<TConjunto> TablaConjunto = new LinkedList<TConjunto>();
+    public LinkedList<TLexemas> TablaLexema = new LinkedList<TLexemas>();
+
     //VARIABLES QUE RECUPERAN LAS EXPRESIONES
     public String concatenaconjunto ="";
     public String concatenaexpresion="";
@@ -91,7 +100,8 @@ EXPRESIONREGULAR::= ERDEFINICION
 ERDEFINICION::=  identificador:nameEr guion mayorque EXPRESION
         {:
             concatenaexpresion = concatenaexpresion.replace("\\\"","\"\\\"\"").replace("\\n","\"\\n\"").replace("\\\'","\"\\\'\"");
-            //--->lista o array
+            TExpresiones expresion = new TExpresiones (nameEr,concatenaexpresion);
+            TablaExpresion.add(expresion);
             System.out.println("ER: " + nameEr + "DEF: "+ concatenaexpresion );
             concatenaexpresion="";
         :}
@@ -123,7 +133,8 @@ CONJUNTO::=     conj doblepto DEFINICIONCONJ
 DEFINICIONCONJ::=   identificador:nameConj guion mayorque ASIGNACIONCONJ:defconj ptocoma
         {:
             System.out.println("CONJ: "+nameConj+" DEF: "+concatenaconjunto);
-            //--->lista o array
+            TConjunto conjunto = new TConjunto (nameConj,concatenaconjunto);
+            TablaConjunto.add(conjunto);
             concatenaconjunto="";
         :}
          ;
@@ -145,7 +156,8 @@ IDCONJUNTO::=       llaveizq:la identificador:idc llaveder:lc
 COMPROBACION::=     identificador:nameval doblepto cadenasc:lexemval 
         {:
                     System.out.println("VAL: "+nameval+" DEF: "+lexemval.substring(1,lexemval.length()-1));
-                    //--->lista o array
+                    TLexemas lexe = new TLexemas(nameval,lexemval.substring(1,lexemval.length()-1));
+                    TablaLexema.add(lexe);
                
         :}
         ;
