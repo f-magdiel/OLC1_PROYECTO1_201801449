@@ -214,6 +214,7 @@ public class App extends javax.swing.JFrame {
             parser.parse();
             System.out.println("Finaliza analisis...");
             System.out.println(parser.TablaLexema.get(0).getNombre());
+            System.out.println(parser.TablaExpresion.get(0).getExpresion());
         }catch(Exception ex){
             ex.printStackTrace();
         }
