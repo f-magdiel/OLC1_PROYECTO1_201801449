@@ -20,6 +20,7 @@ import Analizador.TLexemas;
 import Analizador.TConjunto;
 import Analizador.TExpresiones;
 import Analizador.TError;
+import AFN.AnalizadorAFN;
 
 /**
  *
@@ -206,15 +207,28 @@ public class App extends javax.swing.JFrame {
     }
     
     public void enviarAnalisis(String texto){
-        
+        AnalizadorAFN afn = new AnalizadorAFN();
         try{
             System.out.println("Iniciando analisis....");
             scanner scan = new scanner(new BufferedReader(new StringReader(texto)));
             parser parser = new parser(scan);
             parser.parse();
             System.out.println("Finaliza analisis...");
-            System.out.println(parser.TablaLexema.get(0).getNombre());
-            System.out.println(parser.TablaExpresion.get(0).getExpresion());
+            for (int i = 0; i < parser.TablaLexema.size(); i++) {
+                System.out.println(parser.TablaLexema.get(i).getNombre());
+                System.out.println(parser.TablaLexema.get(i).getLexema());
+            }
+            
+            for (int i = 0; i < parser.TablaConjunto.size(); i++) {
+                System.out.println(parser.TablaConjunto.get(i).getNombre());
+                System.out.println(parser.TablaConjunto.get(i).getConjunto());
+            }
+            
+            for (int i = 0; i < parser.TablaExpresion.size(); i++) {
+                System.out.println(parser.TablaExpresion.get(i).getNombre());
+                System.out.println(parser.TablaExpresion.get(i).getExpresion());
+            }
+            
         }catch(Exception ex){
             ex.printStackTrace();
         }
