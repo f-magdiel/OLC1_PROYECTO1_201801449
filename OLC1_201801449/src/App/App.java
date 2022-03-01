@@ -21,6 +21,7 @@ import Analizador.TConjunto;
 import Analizador.TExpresiones;
 import Analizador.TError;
 import AFN.AnalizadorAFN;
+import Arbol.AnalizadorArbol;
 
 /**
  *
@@ -208,6 +209,7 @@ public class App extends javax.swing.JFrame {
     
     public void enviarAnalisis(String texto){
         AnalizadorAFN afn = new AnalizadorAFN();
+        AnalizadorArbol arbol = new AnalizadorArbol();
         try{
             System.out.println("Iniciando analisis....");
             scanner scan = new scanner(new BufferedReader(new StringReader(texto)));
@@ -225,8 +227,8 @@ public class App extends javax.swing.JFrame {
             }
             
             for (int i = 0; i < parser.TablaExpresion.size(); i++) {
-                System.out.println(parser.TablaExpresion.get(i).getNombre());
-                System.out.println(parser.TablaExpresion.get(i).getExpresion());
+                arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion());
+                
             }
             
         }catch(Exception ex){
