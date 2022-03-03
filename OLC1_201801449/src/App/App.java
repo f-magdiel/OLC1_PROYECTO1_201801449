@@ -227,7 +227,7 @@ public class App extends javax.swing.JFrame {
             }
             
             for (int i = 0; i < parser.TablaExpresion.size(); i++) {
-                arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion());
+                arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion(),parser.TablaExpresion.get(i).getNombre());
                 
             }
             

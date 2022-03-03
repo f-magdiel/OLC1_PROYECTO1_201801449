@@ -2,13 +2,18 @@ package Arbol;
 import Arbol.Nodo;
 import java.util.LinkedList;
 import Arbol.ListaArbol;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 /**
  *
  * @author magdiel
  */
 public class AnalizadorArbol{
     public LinkedList<Nodo> TablaArbol = new LinkedList<Nodo>();
+    public LinkedList<String> TablaNombreArbol = new LinkedList<String>();
     public int contadorAr=0;
+    public static int contArbol=0;
     public Nodo raiz;
     public Nodo aux1;
     public Nodo aux2;
@@ -120,7 +125,8 @@ public class AnalizadorArbol{
         return nodo;
     }
     //************************************ANALIZADOR ER***********************
-    public void entradaAnalizador(String expresionregular){
+    public void entradaAnalizador(String expresionregular,String nombreexpresion){
+        this.TablaNombreArbol.add(nombreexpresion); //guarda el nombre tanto de la expresion como del arbol
         String[] alfabeto = this.analizadorArbol(expresionregular);
        
         System.out.println("SEPERADOS**************************");
@@ -135,11 +141,15 @@ public class AnalizadorArbol{
         this.contadorid++;
         nuevonodo.nododer = new Nodo(null,null,"#",this.contadorid);
         this.raiz = nuevonodo;
-        System.out.println(this.raiz.getNodosEstructura());
-        this.contadorid=0;
-        //this.recorrerArbol(raiz,"");
+        this.graph = this.inicioGrap + this.raiz.getNodosEstructura()+"}\n";
+      
+        //graficar arbol
+        this.graficarArbol(graph);
+        this.graph="";
         
-        this.TablaArbol.add(this.raiz);
+        //System.out.println(inicioGrap);
+        this.contadorid=0;
+        this.TablaArbol.add(this.raiz);// guarda el arbol 
         this.raiz = null;
         
         //System.out.println(this.raiz.getNodosEstructura());
@@ -147,39 +157,56 @@ public class AnalizadorArbol{
         //se agrega el . y el # al final del arbol  
     }
     
-    public void graficarArbol(){
-        //recorrer cada arbol para obtener su graph en string
-        for (int i = 0; i < this.TablaArbol.size(); i++) {
-           //String graphvi = this.recorrerArbol(this.TablaArbol.get(i),"");
-        }
+    public void graficarArbol(String codigoGraphviz){
+        contArbol++;
+        FileWriter file = null;
+        PrintWriter pw = null;
         
-        //mandar el string para graficar
+        try{
+        file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\Arbol"+Integer.toString(contArbol) +".dot");
+        pw = new PrintWriter(file);
+        pw.println(codigoGraphviz);
+        }catch(Exception e){
+            System.out.println("No se pudo crear el archivo dot");
+        }finally{
+            try {
+                if (null != file) {
+                    file.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        //para convetir de .dot a .jpg
+        try{
+            //direccion para dot.exe
+            String dotpath = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
+            //direccion del archivo .dot
+            String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\arbol"+Integer.toString(contArbol)+".dot";
+            //direccion donde se creara el archivo .svg
+            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\arbol"+Integer.toString(contArbol)+".svg";
+            
+            //tipo de conversón
+            String tParam = "-Tsvg";
+            String tOParam = "-o";
+            
+            String[] cmd = new String[5];
+            cmd[0] = dotpath;
+            cmd[1] = tParam;
+            cmd[2] = fileInputPath;
+            cmd[3] = tOParam;
+            cmd[4] = fileOutputPath;
+
+            Runtime rt = Runtime.getRuntime();
+
+            rt.exec(cmd);
+        
+        }catch(Exception ex){
+             ex.printStackTrace();
+        }
     }
     
-    public void recorrerArbol(Nodo arbol,String res){
-        //String resultado="";
-        
-        if(arbol.nodoizq!=null && arbol.nododer!=null){
-            this.contadorAr++;
-            //resultado+= "nodo"+Integer.toString(this.contadorAr)+"[label=\"{"+arbol.anulable+"|{"+arbol.first+"|"+arbol.valor+"|"+arbol.last+"}|"+Integer.toString(arbol.id)+"}\"];\n";
-            recorrerArbol(arbol.nodoizq,graph += "nodo"+Integer.toString(this.contadorAr)+"[label=\"{"+arbol.anulable+"|{"+arbol.first+"|"+arbol.valor+"|"+arbol.last+"}|"+Integer.toString(arbol.id)+"}\"];\n");
-            recorrerArbol(arbol.nododer,graph += "nodo"+Integer.toString(this.contadorAr)+"[label=\"{"+arbol.anulable+"|{"+arbol.first+"|"+arbol.valor+"|"+arbol.last+"}|"+Integer.toString(arbol.id)+"}\"];\n");
-        }
-        if(arbol.nodoizq!=null){
-            this.contadorAr++;
-            graph += "nodo"+Integer.toString(this.contadorAr)+"[label=\"{"+arbol.anulable+"|{"+arbol.first+"|"+arbol.valor+"|"+arbol.last+"}|"+Integer.toString(arbol.id)+"}\"];\n";
-        }
-        
-        if(arbol.nododer!=null){
-            this.contadorAr++;
-            graph += "nodo"+Integer.toString(this.contadorAr)+"[label=\"{"+arbol.anulable+"|{"+arbol.first+"|"+arbol.valor+"|"+arbol.last+"}|"+Integer.toString(arbol.id)+"}\"];\n";
-        }
-        if(arbol.nodoizq == null && arbol.nododer == null){
-            this.contadorAr++;
-            graph += "nodo"+Integer.toString(this.contadorAr)+"[label=\"{"+arbol.anulable+"|{"+arbol.first+"|"+arbol.valor+"|"+arbol.last+"}|"+Integer.toString(arbol.id)+"}\"];\n";
-        }
-        
-    }
+   
     
     
     public String[] analizadorArbol(String er){
