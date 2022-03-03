@@ -85,11 +85,21 @@ public class Nodo{
     }
     
     public String getNodosEstructura(){
-           String etiqueta;
+           String etiqueta="";
         if (nodoizq == null && nododer == null) {
-            etiqueta = "nodo" + id + " [ label =\"" + valor+"\"];\n";
+            if(valor.equals("|")){
+               etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|\\"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+            }else{
+                etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+            }
+            
         } else {
-            etiqueta = "nodo" + id + " [ label =\"" + valor + "\"];\n";
+            if(valor.equals("|")){
+               etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|\\"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+            }else{
+                etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+            }
+            
         }
         if (nodoizq != null) {
             etiqueta = etiqueta + nodoizq.getNodosEstructura()
