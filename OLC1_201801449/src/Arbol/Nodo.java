@@ -12,13 +12,14 @@ package Arbol;
 public class Nodo{
     public String valor;
     public int id;
+    public int num;
     public Nodo nodoizq;
     public Nodo nododer;
     public String first;
     public String last;
     public String anulable;
     
-    public Nodo(Nodo _nodoizq,Nodo _nododer,String _valor,int _id){
+    public Nodo(Nodo _nodoizq,Nodo _nododer,String _valor,int _id,int _num){
         this.nododer = null;
         this.nodoizq = null;
         this.id = _id;
@@ -26,6 +27,7 @@ public class Nodo{
         this.anulable = "";
         this.first  = "";
         this.last = "";
+        this.num = _num;
     }
     
     public String getValor(){
@@ -88,16 +90,16 @@ public class Nodo{
            String etiqueta="";
         if (nodoizq == null && nododer == null) {
             if(valor.equals("|")){
-               etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|\\"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+               etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|\\"+ valor+"|"+last+"}|"+num+"}"+"\"];\n";
             }else{
-                etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+                etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|"+ valor+"|"+last+"}|"+num+"}"+"\"];\n";
             }
             
         } else {
             if(valor.equals("|")){
-               etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|\\"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+               etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|\\"+ valor+"|"+last+"}|"+num+"}"+"\"];\n";
             }else{
-                etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|"+ valor+"|"+last+"}|"+id+"}"+"\"];\n";
+                etiqueta = "nodo" + id + " [ label =\"{"+anulable+"|{"+first+"|"+ valor+"|"+last+"}|"+num+"}"+"\"];\n";
             }
             
         }

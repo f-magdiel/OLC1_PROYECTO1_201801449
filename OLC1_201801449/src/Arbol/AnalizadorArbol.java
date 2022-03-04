@@ -14,6 +14,7 @@ public class AnalizadorArbol{
     public LinkedList<String> TablaNombreArbol = new LinkedList<String>();
     public int contadorAr=0;
     public static int contArbol=0;
+    public int contadornum=0;
     public Nodo raiz;
     public Nodo aux1;
     public Nodo aux2;
@@ -37,38 +38,120 @@ public class AnalizadorArbol{
         
         if(nodo==null){ // para ver si raiz es null
             this.contadorid++;
-            nodo = new Nodo(null,null,caracter,this.contadorid);
-            //nodo.nododer = new Nodo(null,null,caracter,id);
+            nodo = new Nodo(null,null,caracter,this.contadorid,0);
+            //Aplicacion Anulable o No
+            if(nodo.nodoizq==null && nodo.nododer==null){
+                nodo.anulable = "N";
+                //nodo.first = Integer.toString(this.contadorid);
+                //nodo.last = Integer.toString(this.contadorid);
+            }
+            
             
         }else{// si raiz no es null
             if(caracter.equals(".") || caracter.equals("|")){
                 nodo.valor = caracter;//el nodo principal es seteado
-            }else if(caracter.equals("+") || caracter.equals("*") || caracter.equals("?")){
-               //ya no hay espacio es necesario crear otra rama
+                //Aplicacion Anulable o NO
+                if(nodo.valor.equals("|")){
+                    if(nodo.nodoizq.anulable.equals("A") || nodo.nododer.anulable.equals("A")){
+                        nodo.anulable = "A";
+                    }else{
+                        nodo.anulable = "N";
+                    }
+                     //last y first
+                    //nodo.first = nodo.nodoizq.first +","+nodo.nododer.first;
+                    //nodo.last = nodo.nodoizq.last+","+nodo.nododer.last;
+                }else if(nodo.valor.equals(".")){
+                    if(nodo.nodoizq.anulable.equals("A")&& nodo.nododer.anulable.equals("A")){
+                        nodo.anulable="A";
+                    }else{
+                        nodo.anulable="N";
+                    }
+                    //first y last
+                    /*if(nodo.nodoizq.equals("A")){ //first
+                        nodo.first = nodo.nodoizq.first+","+nodo.nododer.first;
+                    }else{
+                        nodo.first = nodo.nodoizq.first;
+                    }
+                    
+                    if(nodo.nododer.anulable.equals("A")){
+                        nodo.last = nodo.nodoizq.last+","+nodo.nododer.last;
+                    }else{
+                        nodo.last = nodo.nododer.last;
+                    }*/
+                }
+                
+               
+            }else if(caracter.equals("+") || caracter.equals("*") || caracter.equals("?")){//---------->Seguir aqui
+                    
                //siempre se creara otra rama para aislar los simbolos de +,*,?
                     //aux = padre
                     if(nodo.valor.equals("")){
                         nodo.valor = caracter;//se setea el valor para ver si se didive
                     }
-                    if(nodo.valor.equals("+") || nodo.valor.endsWith("*")||nodo.valor.equals("?")){
+                    if(nodo.valor.equals("+") || nodo.valor.equals("*")||nodo.valor.equals("?")){
                         if (nodo.nododer == null && nodo.nodoizq==null){//cuando izq y der son null es hoja
                             this.contadorid++;
                             aux1 = nodo;
-                            Nodo nodocaracter = new Nodo(null,null,caracter,this.contadorid);//cuando ya no hay espacio y se setea *,?,+
+                            Nodo nodocaracter = new Nodo(null,null,caracter,this.contadorid,0);//cuando ya no hay espacio y se setea *,?,+
                             nodocaracter.nododer = aux1;
+                            //Si es anulable o no
+                            if(nodocaracter.nododer.valor.equals("*")){
+                                nodocaracter.anulable = "A";
+                                //last y first
+                                //nodocaracter.first = nodocaracter.nododer.first;
+                                //nodocaracter.last = nodocaracter.nododer.last;
+                            }else if(nodocaracter.nododer.valor.equals("?")){
+                                nodocaracter.anulable = "A";
+                                //last y first
+                                //nodocaracter.first = nodocaracter.nododer.first;
+                                //nodocaracter.last = nodocaracter.nodoizq.last;
+                            }else if(nodocaracter.nododer.valor.equals("+")){
+                                if(nodocaracter.nododer.anulable.equals("A")){
+                                    nodocaracter.anulable="A";
+                                }else{
+                                    nodocaracter.anulable="N";
+                                }
+                                
+                                //last y first
+                                //nodocaracter.first = nodocaracter.nododer.first;
+                                //nodocaracter.last = nodocaracter.nodoizq.last;
+                            }
                             nodo = nodocaracter;
-                        aux1=null;
+                            aux1=null;
                         }
                     
                         if(nodo.nododer!=null && nodo.nodoizq!=null){//cuando ya no es hoja sino rama
                             this.contadorid++;
                             aux1 = nodo.nododer;
                             aux2 = nodo.nodoizq;
-                            nodo.valor = caracter;
-                            Nodo nuevonodo = new Nodo(null,null,"",this.contadorid);
+                            nodo.valor = caracter;//se agrega el simbolo +,*,?
+                            Nodo nuevonodo = new Nodo(null,null,"",this.contadorid,0);
                             nodo.nododer =null;
                             nuevonodo.nododer = aux1;
                             nuevonodo.nodoizq = nodo;
+                            //Si es anulable o no
+                            if(nuevonodo.nodoizq.valor.equals("*")){
+                               nuevonodo.nodoizq.anulable="A";
+                               //first y last
+                               //nuevonodo.first = nuevonodo.nodoizq.first;
+                               //nuevonodo.last = nuevonodo.nodoizq.last;
+                            }else if(nuevonodo.nodoizq.valor.equals("?")){
+                                nuevonodo.nodoizq.valor.equals("A");
+                                
+                                //first y last
+                                //nuevonodo.first = nuevonodo.nodoizq.first;
+                                //nuevonodo.last = nuevonodo.nodoizq.last;
+                            }else if(nuevonodo.nodoizq.valor.equals("+")){
+                                if(nuevonodo.nodoizq.nodoizq.anulable.equals("A")){
+                                    nuevonodo.nodoizq.anulable="A";
+                                }else{
+                                    nuevonodo.nodoizq.anulable="N";
+                                }
+                                
+                                //first y last
+                                //nuevonodo.first = nuevonodo.nodoizq.first;
+                                //nuevonodo.last = nuevonodo.nododer.last;
+                            }
                             nodo = nuevonodo;
                             aux1=null;
                             aux2=null;
@@ -77,8 +160,30 @@ public class AnalizadorArbol{
                     }else{
                         this.contadorid++;
                         aux1=nodo;
-                        Nodo nuevonodo = new Nodo(null,null,caracter,this.contadorid);
+                        Nodo nuevonodo = new Nodo(null,null,caracter,this.contadorid,0);                        
                         nuevonodo.nododer = aux1;
+                        //Si es anulable o no
+                        if(nuevonodo.valor.equals("*")){
+                           nuevonodo.anulable = "A";
+                           //last y first
+                           //nuevonodo.first = nuevonodo.nododer.first;
+                           //nuevonodo.last = nuevonodo.nododer.last;
+                        }else if(nuevonodo.valor.equals("?")){
+                            nuevonodo.anulable="A";
+                            //last y first
+                            //nuevonodo.first = nuevonodo.nododer.first;
+                            //nuevonodo.last = nuevonodo.nododer.last;
+                        }else if(nuevonodo.valor.equals("+")){
+                            if(nuevonodo.nododer.anulable.equals("A")){
+                                nuevonodo.anulable="A";
+                            }else{
+                                nuevonodo.anulable="N";
+                            }
+                            
+                            //last y first
+                            //nuevonodo.first = nuevonodo.nododer.first;
+                            //nuevonodo.last = nuevonodo.nododer.last;
+                        }
                         nodo = nuevonodo;
                         aux1=null;
                     
@@ -91,30 +196,45 @@ public class AnalizadorArbol{
                 if(nodo.nododer==null && nodo.nodoizq==null){ //cuando es hoja
                     aux1 = nodo;
                     this.contadorid++;
-                    Nodo nuevonodo = new Nodo(null,null,"",this.contadorid);
+                    Nodo nuevonodo = new Nodo(null,null,"",this.contadorid,0);
                     nuevonodo.nododer = aux1;
                     this.contadorid++;
-                    nuevonodo.nodoizq = new Nodo(null,null,caracter,this.contadorid);
+                    nuevonodo.nodoizq = new Nodo(null,null,caracter,this.contadorid,0);
+                    //Si es anulable o no
+                    nuevonodo.nodoizq.anulable="N";//como es hoja siempre es N
+                    //last y first
+                    //nuevonodo.nodoizq.first = Integer.toString(this.contadorid);
+                    //nuevonodo.nodoizq.last = Integer.toString(this.contadorid);
                     nodo = nuevonodo;
                     aux1=null;
                     
                 }else if(nodo.nodoizq!=null && nodo.nododer!=null){
                     this.contadorid++;
                     aux1 = nodo;
-                    Nodo nuevonodo = new Nodo(null,null,"",this.contadorid);
+                    Nodo nuevonodo = new Nodo(null,null,"",this.contadorid,0);
                     nuevonodo.nododer = aux1;
                     this.contadorid++;
-                    nuevonodo.nodoizq = new Nodo(null,null,caracter,this.contadorid);
+                    nuevonodo.nodoizq = new Nodo(null,null,caracter,this.contadorid,0);
+                    //Si es anulable o no
+                    nuevonodo.nodoizq.anulable="N";//como es hoja siempre es N
+                    //last y first
+                    //nuevonodo.nodoizq.last = Integer.toString(this.contadorid);
+                    //nuevonodo.nodoizq.first = Integer.toString(this.contadorid);
                     nodo = nuevonodo;
                     aux1=null;
                     
-                }else{//se crea una rama nuevo
+                }else{//se crea una rama nueva
                     this.contadorid++;
                     aux1 = nodo;
-                    Nodo nuevonodo = new Nodo(null,null,"",this.contadorid);
+                    Nodo nuevonodo = new Nodo(null,null,"",this.contadorid,0);
                     nuevonodo.nododer = aux1;
                     this.contadorid++;
-                    nuevonodo.nodoizq = new Nodo(null,null,caracter,this.contadorid);
+                    nuevonodo.nodoizq = new Nodo(null,null,caracter,this.contadorid,0);
+                    //Si es anulable o no
+                    nuevonodo.nodoizq.anulable="N";//como es hoja siempre es N
+                    //first y post
+                    //nuevonodo.nodoizq.first = Integer.toString(this.contadorid);
+                    //nuevonodo.nodoizq.last = Integer.toString(this.contadorid);
                     nodo = nuevonodo;
                     aux1=null;
                     
@@ -136,11 +256,34 @@ public class AnalizadorArbol{
         }
         //para cerrar arbol
         this.contadorid++;
-        Nodo nuevonodo = new Nodo(null,null,".",this.contadorid);
+        Nodo nuevonodo = new Nodo(null,null,".",this.contadorid,0);
         nuevonodo.nodoizq = this.raiz;
+        
         this.contadorid++;
-        nuevonodo.nododer = new Nodo(null,null,"#",this.contadorid);
+        nuevonodo.nododer = new Nodo(null,null,"#",this.contadorid,0);
+        nuevonodo.nododer.anulable="N";
+        //nuevonodo.nododer.first = Integer.toString(this.contadorid);
+        //nuevonodo.nododer.last = Integer.toString(this.contadorid);
         this.raiz = nuevonodo;
+        
+        //Si es anulable o no
+        if(this.raiz.valor.equals(".")){
+            if(this.raiz.nodoizq.anulable.equals("A") && this.raiz.nododer.anulable.equals("A")){
+                this.raiz.anulable="A";
+            }else{
+                this.raiz.anulable="N";
+            }
+        }
+        //para agregar num
+        this.enumerarHoja(this.raiz);
+        this.contadornum =0;
+        //para realizar first y last
+        this.firstylast(this.raiz);
+        //para follow
+        
+        
+        
+        
         this.graph = this.inicioGrap + this.raiz.getNodosEstructura()+"}\n";
       
         //graficar arbol
@@ -155,6 +298,166 @@ public class AnalizadorArbol{
         //System.out.println(this.raiz.getNodosEstructura());
         System.out.println("FIN*********************************");
         //se agrega el . y el # al final del arbol  
+    }
+    
+    public void firstylast(Nodo nodo){
+            if(nodo.valor.equals(".")){
+                if(!nodo.nodoizq.first.equals("") && !nodo.nododer.last.equals("")){//cuando tiene fisr y last
+                    if(nodo.nodoizq.anulable.equals("A")){
+                        nodo.first = nodo.nodoizq.first+","+nodo.nododer.first;
+                        
+                    }else{
+                        nodo.first = nodo.nodoizq.first;
+                    }
+                    
+                    if(nodo.nododer.anulable.equals("A")){
+                        nodo.last = nodo.nodoizq.last+","+nodo.nododer.last;
+                    }else{
+                        nodo.last = nodo.nododer.last;
+                    }
+                }else{//cuando tiene viene vacio ""
+                    this.firstylast(nodo.nodoizq);
+                    this.firstylast(nodo.nododer);
+                    
+                    //segunda
+                    if(!nodo.nodoizq.first.equals("") && !nodo.nododer.last.equals("")){//cuando tiene fisr y last
+                    if(nodo.nodoizq.anulable.equals("A")){
+                        nodo.first = nodo.nodoizq.first+","+nodo.nododer.first;
+                        
+                    }else{
+                        nodo.first = nodo.nodoizq.first;
+                    }
+                    
+                    if(nodo.nododer.anulable.equals("A")){
+                        nodo.last = nodo.nodoizq.last+","+nodo.nododer.last;
+                    }else{
+                        nodo.last = nodo.nododer.last;
+                    }
+                    }
+                }
+            }else if(nodo.valor.equals("|")){
+                if(!nodo.nodoizq.first.equals("") && !nodo.nododer.last.equals("")){//cuando tiene fisr y last
+                    nodo.first = nodo.nodoizq.first+","+nodo.nododer.first;
+                    nodo.last = nodo.nodoizq.last+","+nodo.nododer.last;
+                    
+                }else{//cuando tiene viene vacio ""
+                    this.firstylast(nodo.nodoizq);
+                    this.firstylast(nodo.nododer);
+                    
+                    //segunda
+                    if(!nodo.nodoizq.first.equals("") && !nodo.nododer.last.equals("")){//cuando tiene fisr y last
+                    nodo.first = nodo.nodoizq.first+","+nodo.nododer.first;
+                    nodo.last = nodo.nodoizq.last+","+nodo.nododer.last;
+                    
+                    }
+                }
+            }else if(nodo.valor.equals("+")){
+                if(nodo.nodoizq!=null && nodo.nododer==null){
+                    if(!nodo.nodoizq.first.equals("") && !nodo.nodoizq.last.equals("")){
+                        nodo.first = nodo.nodoizq.first;
+                        nodo.last = nodo.nodoizq.last;
+                    }else{
+                        this.firstylast(nodo.nodoizq);
+                        //segunda
+                        if(!nodo.nodoizq.first.equals("") && !nodo.nodoizq.last.equals("")){
+                        nodo.first = nodo.nodoizq.first;
+                        nodo.last = nodo.nodoizq.last;
+                        }
+                    }
+                }
+                
+                if(nodo.nodoizq==null && nodo.nododer!=null){
+                    if(!nodo.nododer.first.equals("") && !nodo.nododer.last.equals("")){
+                        nodo.first = nodo.nododer.first;
+                        nodo.last = nodo.nododer.last;
+                    }else{
+                        this.firstylast(nodo.nododer);
+                        //segunda
+                        if(!nodo.nododer.first.equals("") && !nodo.nododer.last.equals("")){
+                        nodo.first = nodo.nododer.first;
+                        nodo.last = nodo.nododer.last;
+                        }
+                    }
+                }
+                
+            }else if(nodo.valor.equals("*")){
+                 if(nodo.nodoizq!=null && nodo.nododer==null){
+                    if(!nodo.nodoizq.first.equals("") && !nodo.nodoizq.last.equals("")){
+                        nodo.first = nodo.nodoizq.first;
+                        nodo.last = nodo.nodoizq.last;
+                    }else{
+                        this.firstylast(nodo.nodoizq);
+                        //segunda
+                        if(!nodo.nodoizq.first.equals("") && !nodo.nodoizq.last.equals("")){
+                        nodo.first = nodo.nodoizq.first;
+                        nodo.last = nodo.nodoizq.last;
+                        }
+                    }
+                }
+                
+                if(nodo.nodoizq==null && nodo.nododer!=null){
+                    if(!nodo.nododer.first.equals("") && !nodo.nododer.last.equals("")){
+                        nodo.first = nodo.nododer.first;
+                        nodo.last = nodo.nododer.last;
+                    }else{
+                        this.firstylast(nodo.nododer);
+                        //segunda
+                        if(!nodo.nododer.first.equals("") && !nodo.nododer.last.equals("")){
+                        nodo.first = nodo.nododer.first;
+                        nodo.last = nodo.nododer.last;
+                        }
+                    }
+                }
+            }else if(nodo.valor.equals("?")){
+                if(nodo.nodoizq!=null && nodo.nododer==null){
+                    if(!nodo.nodoizq.first.equals("") && !nodo.nodoizq.last.equals("")){
+                        nodo.first = nodo.nodoizq.first;
+                        nodo.last = nodo.nodoizq.last;
+                    }else{
+                        this.firstylast(nodo.nodoizq);
+                        //segunda
+                        if(!nodo.nodoizq.first.equals("") && !nodo.nodoizq.last.equals("")){
+                        nodo.first = nodo.nodoizq.first;
+                        nodo.last = nodo.nodoizq.last;
+                        }
+                    }
+                }
+                
+                if(nodo.nodoizq==null && nodo.nododer!=null){
+                    if(!nodo.nododer.first.equals("") && !nodo.nododer.last.equals("")){
+                        nodo.first = nodo.nododer.first;
+                        nodo.last = nodo.nododer.last;
+                    }else{
+                        this.firstylast(nodo.nododer);
+                        //segunda
+                        if(!nodo.nododer.first.equals("") && !nodo.nododer.last.equals("")){
+                        nodo.first = nodo.nododer.first;
+                        nodo.last = nodo.nododer.last;
+                        }
+                    }
+                }
+            }
+            
+            
+    }
+    
+    public void enumerarHoja(Nodo nodo){
+        if(nodo.nodoizq!=null && nodo.nododer!=null){
+            this.enumerarHoja(nodo.nodoizq);
+            this.enumerarHoja(nodo.nododer);
+        }
+        if(nodo.nodoizq!=null && nodo.nododer==null){
+            this.enumerarHoja(nodo.nodoizq);
+        }
+        if(nodo.nodoizq==null && nodo.nododer!=null){
+            this.enumerarHoja(nodo.nododer);
+        }
+        if(nodo.nodoizq==null && nodo.nododer==null){
+            this.contadornum++;
+            nodo.num = this.contadornum;
+            nodo.first = Integer.toString(this.contadornum);
+            nodo.last = Integer.toString(this.contadornum);
+        }
     }
     
     public void graficarArbol(String codigoGraphviz){
