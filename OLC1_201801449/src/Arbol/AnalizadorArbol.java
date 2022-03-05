@@ -5,13 +5,18 @@ import Arbol.ListaArbol;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+
 /**
  *
  * @author magdiel
  */
 public class AnalizadorArbol{
+    //para guardar las estructuras y nombres
     public LinkedList<Nodo> TablaArbol = new LinkedList<Nodo>();
     public LinkedList<String> TablaNombreArbol = new LinkedList<String>();
+    public String [][] tablaFollow;
     public int contadorAr=0;
     public static int contArbol=0;
     public int contadornum=0;
@@ -276,11 +281,25 @@ public class AnalizadorArbol{
         }
         //para agregar num
         this.enumerarHoja(this.raiz);
-        this.contadornum =0;
+        
         //para realizar first y last
         this.firstylast(this.raiz);
         //para follow
         
+        this.tablaFollow = new String[2][this.contadornum];
+        this.limpiarArray();
+        //asignacion de hojas
+        this.asignacionHojas();
+        this.followpos(this.raiz);
+        this.ordenamientoFollow(this.tablaFollow, contadornum);//para ordenar el follow
+        
+        this.contadornum =0;
+        this.tablaFollow=null;
+        //para transiciones
+        
+        //diagramathis
+        
+        //validacion cadena
         
         
         
@@ -292,12 +311,103 @@ public class AnalizadorArbol{
         
         //System.out.println(inicioGrap);
         this.contadorid=0;
+        //****************GUARDAR ARBOL***********************
         this.TablaArbol.add(this.raiz);// guarda el arbol 
         this.raiz = null;
         
         //System.out.println(this.raiz.getNodosEstructura());
         System.out.println("FIN*********************************");
         //se agrega el . y el # al final del arbol  
+    }
+    
+    public void limpiarArray(){
+        for (int i = 0; i < this.contadornum; i++) {
+            this.tablaFollow[1][i]="";
+        }
+    }
+    public void ordenamientoFollow(String[][] follow,int cont){
+        for (int i = 0; i < cont; i++) {
+            String valor = follow[1][i];
+            follow[1][i] = this.ordenarFollow(valor);
+        }
+    }
+    
+    public String ordenarFollow(String cadena){
+        String[] palabra = cadena.split(",");
+        Arrays.sort(palabra);
+        String resultado = Arrays.toString(palabra);
+        return resultado;
+    }
+    
+    public void followpos(Nodo nodo){
+        //crear la tabla con las hojas
+        
+        if(nodo.valor.equals("*")){
+           String[] hoja = nodo.last.split(",");
+           String sig = nodo.first;
+            for (int i = 0; i < hoja.length; i++) {
+                this.tablaFollow[1][Integer.parseInt(hoja[i])-1] += sig+",";
+            }
+            //asingacion de follow
+            if(nodo.nodoizq!=null && nodo.nododer!=null){
+                this.followpos(nodo.nodoizq);
+                this.followpos(nodo.nododer);
+            }
+            if(nodo.nodoizq!=null && nodo.nododer==null){
+                this.followpos(nodo.nodoizq);
+                //this.followpos(nodo.nododer);
+            }
+            if(nodo.nodoizq==null && nodo.nododer!=null){
+                //this.followpos(nodo.nodoizq);
+                this.followpos(nodo.nododer);
+            }
+        }else if(nodo.valor.equals("+")){
+            String[] hoja = nodo.last.split(",");
+            String sig = nodo.first;
+            for (int i = 0; i < hoja.length; i++) {
+                this.tablaFollow[1][Integer.parseInt(hoja[i])-1]+=sig+",";
+            }
+            //asingacion de follow
+            if(nodo.nodoizq!=null && nodo.nododer!=null){
+                this.followpos(nodo.nodoizq);
+                this.followpos(nodo.nododer);
+            }
+            if(nodo.nodoizq!=null && nodo.nododer==null){
+                this.followpos(nodo.nodoizq);
+                //this.followpos(nodo.nododer);
+            }
+            if(nodo.nodoizq==null && nodo.nododer!=null){
+                //this.followpos(nodo.nodoizq);
+                this.followpos(nodo.nododer);
+            }
+        }else if(nodo.valor.equals(".")){
+            String[] hoja = nodo.nodoizq.last.split(",");
+            String sig = nodo.nododer.first;
+            for (int i = 0; i < hoja.length; i++) {
+                this.tablaFollow[1][Integer.parseInt(hoja[i])-1] += sig+",";//cambio
+            }
+            //asingacion de follow
+            if(nodo.nodoizq!=null && nodo.nododer!=null){
+                this.followpos(nodo.nodoizq);
+                this.followpos(nodo.nododer);
+            }
+            if(nodo.nodoizq!=null && nodo.nododer==null){
+                this.followpos(nodo.nodoizq);
+                //this.followpos(nodo.nododer);
+            }
+            if(nodo.nodoizq==null && nodo.nododer!=null){
+                //this.followpos(nodo.nodoizq);
+                this.followpos(nodo.nododer);
+            }
+        }
+        //asingacion de follow
+       
+    }
+    
+    public void asignacionHojas(){
+        for (int i = 0; i < this.contadornum; i++) {// columna 0
+            this.tablaFollow[0][i]=Integer.toString(i+1);
+        }
     }
     
     public void firstylast(Nodo nodo){
