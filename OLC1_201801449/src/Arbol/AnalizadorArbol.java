@@ -19,6 +19,7 @@ public class AnalizadorArbol{
     public String [][] tablaFollow;
     public int contadorAr=0;
     public static int contArbol=0;
+    public static int contSiguiente=0;
     public int contadornum=0;
     public Nodo raiz;
     public Nodo aux1;
@@ -293,8 +294,7 @@ public class AnalizadorArbol{
         this.followpos(this.raiz);
         this.ordenamientoFollow(this.tablaFollow, contadornum);//para ordenar el follow
         
-        this.contadornum =0;
-        this.tablaFollow=null;
+        
         //para transiciones
         
         //diagramathis
@@ -302,18 +302,21 @@ public class AnalizadorArbol{
         //validacion cadena
         
         
-        
+        //GRAFICA DE ARBOL*************************
         this.graph = this.inicioGrap + this.raiz.getNodosEstructura()+"}\n";
-      
         //graficar arbol
         this.graficarArbol(graph);
         this.graph="";
         
+        //GRAFICA DE LA TABLA DE FOLLOW********************
+        this.graficarSuguiente(this.tablaFollow,this.contadornum);
         //System.out.println(inicioGrap);
         this.contadorid=0;
         //****************GUARDAR ARBOL***********************
         this.TablaArbol.add(this.raiz);// guarda el arbol 
         this.raiz = null;
+        this.contadornum =0;
+        this.tablaFollow=null;
         
         //System.out.println(this.raiz.getNodosEstructura());
         System.out.println("FIN*********************************");
@@ -570,6 +573,70 @@ public class AnalizadorArbol{
         }
     }
     
+    public void graficarSuguiente(String [][]tabla,int contadornum){
+        contSiguiente++;
+        FileWriter file = null;
+        PrintWriter pw = null;
+        
+        try{
+            file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\Siguiente"+Integer.toString(contSiguiente)+".dot");
+            pw = new PrintWriter(file);
+            pw.println("digraph D {");
+            pw.println("node [shape=plaintext]");
+            pw.println("some_node [");
+            pw.println("label=<");
+            pw.println("<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">");
+            pw.println("<tr><td bgcolor=\"yellow\">Hoja</td><td bgcolor=\"yellow\">Siguientes</td></tr>");
+            //para agregar la tabla
+            for (int j = 0; j < contadornum; j++) {
+                pw.println("<tr><td bgcolor=\"yellow\">"+this.tablaFollow[0][j]+"</td><td bgcolor=\"yellow\">"+this.tablaFollow[1][j]+"</td></tr>");
+            }
+            
+            pw.println("</table>>");
+            pw.println("];");
+            pw.println("}");
+            
+        }catch(Exception e){
+            System.out.println("No se pudo crear el archivo dot");
+        }finally{
+            try {
+                if (null != file) {
+                    file.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
+        }
+        
+        //para convetir de .dot a .jpg
+        try{
+            //direccion para dot.exe
+            String dotpath = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
+            //direccion del archivo .dot
+            String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\Siguiente"+Integer.toString(contSiguiente)+".dot";
+            //direccion donde se creara el archivo .svg
+            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\Siguiente"+Integer.toString(contSiguiente)+".svg";
+            
+            //tipo de conversón
+            String tParam = "-Tsvg";
+            String tOParam = "-o";
+            
+            String[] cmd = new String[5];
+            cmd[0] = dotpath;
+            cmd[1] = tParam;
+            cmd[2] = fileInputPath;
+            cmd[3] = tOParam;
+            cmd[4] = fileOutputPath;
+
+            Runtime rt = Runtime.getRuntime();
+
+            rt.exec(cmd);
+        
+        }catch(Exception ex){
+             ex.printStackTrace();
+        }
+        
+    }
     public void graficarArbol(String codigoGraphviz){
         contArbol++;
         FileWriter file = null;
