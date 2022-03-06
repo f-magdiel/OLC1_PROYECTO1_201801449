@@ -16,6 +16,14 @@ public class AnalizadorArbol{
     //para guardar las estructuras y nombres
     public LinkedList<Nodo> TablaArbol = new LinkedList<Nodo>();
     public LinkedList<String> TablaNombreArbol = new LinkedList<String>();
+    public ArrayList<String> auxSimbolo = new ArrayList<String>();
+    //para transicion
+    public ArrayList<String> A1 = new ArrayList();
+    public ArrayList<String> A2 = new ArrayList();
+    public ArrayList<String> A3 = new ArrayList();
+    public ArrayList<String> A4 = new ArrayList();
+    public ArrayList<String> A5 = new ArrayList();
+    
     public String [][] tablaFollow;
     public int contadorAr=0;
     public static int contArbol=0;
@@ -286,8 +294,8 @@ public class AnalizadorArbol{
         //para realizar first y last
         this.firstylast(this.raiz);
         //para follow
-        
-        this.tablaFollow = new String[2][this.contadornum];
+        //se crea la matriz acuerdo al tamaño de la tabla
+        this.tablaFollow = new String[3][this.contadornum];
         this.limpiarArray();
         //asignacion de hojas
         this.asignacionHojas();
@@ -296,6 +304,8 @@ public class AnalizadorArbol{
         
         
         //para transiciones
+        //calculo de transiciones
+        this.calculoTransicion(this.raiz);
         
         //diagramathis
         
@@ -314,24 +324,39 @@ public class AnalizadorArbol{
         this.contadorid=0;
         //****************GUARDAR ARBOL***********************
         this.TablaArbol.add(this.raiz);// guarda el arbol 
+        
+        //*************RESET DE VARIABLES*******************
         this.raiz = null;
         this.contadornum =0;
         this.tablaFollow=null;
+        this.auxSimbolo.clear();
         
         //System.out.println(this.raiz.getNodosEstructura());
         System.out.println("FIN*********************************");
         //se agrega el . y el # al final del arbol  
     }
     
+    public void calculoTransicion(Nodo nodo){
+        String estado="S";
+        int contadorEstado=0;
+        String estados=estado+""+Integer.toString(contadorEstado);
+        String primero = nodo.first;
+        String[] nodoIniciales = primero.replace("[", "").replace("]", "").split(",");//obteniendo cada hoja
+        
+        //primero
+        
+        
+    }
+    
     public void limpiarArray(){
         for (int i = 0; i < this.contadornum; i++) {
-            this.tablaFollow[1][i]="";
+            this.tablaFollow[2][i]="";
         }
     }
     public void ordenamientoFollow(String[][] follow,int cont){
         for (int i = 0; i < cont; i++) {
-            String valor = follow[1][i];
-            follow[1][i] = this.ordenarFollow(valor);
+            String valor = follow[2][i];
+            follow[2][i] = this.ordenarFollow(valor);
         }
     }
     
@@ -349,7 +374,7 @@ public class AnalizadorArbol{
            String[] hoja = nodo.last.split(",");
            String sig = nodo.first;
             for (int i = 0; i < hoja.length; i++) {
-                this.tablaFollow[1][Integer.parseInt(hoja[i])-1] += sig+",";
+                this.tablaFollow[2][Integer.parseInt(hoja[i])-1] += sig+",";
             }
             //asingacion de follow
             if(nodo.nodoizq!=null && nodo.nododer!=null){
@@ -368,7 +393,7 @@ public class AnalizadorArbol{
             String[] hoja = nodo.last.split(",");
             String sig = nodo.first;
             for (int i = 0; i < hoja.length; i++) {
-                this.tablaFollow[1][Integer.parseInt(hoja[i])-1]+=sig+",";
+                this.tablaFollow[2][Integer.parseInt(hoja[i])-1]+=sig+",";
             }
             //asingacion de follow
             if(nodo.nodoizq!=null && nodo.nododer!=null){
@@ -387,7 +412,7 @@ public class AnalizadorArbol{
             String[] hoja = nodo.nodoizq.last.split(",");
             String sig = nodo.nododer.first;
             for (int i = 0; i < hoja.length; i++) {
-                this.tablaFollow[1][Integer.parseInt(hoja[i])-1] += sig+",";//cambio
+                this.tablaFollow[2][Integer.parseInt(hoja[i])-1] += sig+",";//cambio
             }
             //asingacion de follow
             if(nodo.nodoizq!=null && nodo.nododer!=null){
@@ -410,6 +435,10 @@ public class AnalizadorArbol{
     public void asignacionHojas(){
         for (int i = 0; i < this.contadornum; i++) {// columna 0
             this.tablaFollow[0][i]=Integer.toString(i+1);
+        }
+        
+        for (int i = 0; i < this.auxSimbolo.size(); i++) {
+            this.tablaFollow[1][i]=this.auxSimbolo.get(i);
         }
     }
     
@@ -567,6 +596,7 @@ public class AnalizadorArbol{
         }
         if(nodo.nodoizq==null && nodo.nododer==null){
             this.contadornum++;
+            this.auxSimbolo.add(nodo.valor);
             nodo.num = this.contadornum;
             nodo.first = Integer.toString(this.contadornum);
             nodo.last = Integer.toString(this.contadornum);
@@ -586,10 +616,10 @@ public class AnalizadorArbol{
             pw.println("some_node [");
             pw.println("label=<");
             pw.println("<table border=\"0\" cellborder=\"1\" cellspacing=\"0\">");
-            pw.println("<tr><td bgcolor=\"yellow\">Hoja</td><td bgcolor=\"yellow\">Siguientes</td></tr>");
+            pw.println("<tr><td bgcolor=\"yellow\">Hoja</td><td bgcolor=\"yellow\">Simbolo</td><td bgcolor=\"yellow\">Siguientes</td></tr>");
             //para agregar la tabla
             for (int j = 0; j < contadornum; j++) {
-                pw.println("<tr><td bgcolor=\"yellow\">"+this.tablaFollow[0][j]+"</td><td bgcolor=\"yellow\">"+this.tablaFollow[1][j]+"</td></tr>");
+                pw.println("<tr><td bgcolor=\"yellow\">"+this.tablaFollow[0][j]+"</td><td bgcolor=\"yellow\">"+this.tablaFollow[1][j]+"</td><td bgcolor=\"yellow\">"+this.tablaFollow[2][j]+"</td></tr>");
             }
             
             pw.println("</table>>");
