@@ -7,15 +7,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
-
+import Analizador.*;
+import Arbol.TSiguiente;
+import Trans.*;
 /**
  *
  * @author magdiel
  */
 public class AnalizadorArbol{
+    //datos guardados anteriormente
+    public ArrayList<TConjunto> TB_CONJUNTO = new ArrayList<TConjunto>();
+    public ArrayList<TLexemas> TB_LEXEMA = new ArrayList<TLexemas>();
+    public ArrayList<TSiguiente> TB_SIGUIENTE = new ArrayList<TSiguiente>();
+    
     //para guardar las estructuras y nombres
-    public LinkedList<Nodo> TablaArbol = new LinkedList<Nodo>();
-    public LinkedList<String> TablaNombreArbol = new LinkedList<String>();
+    public ArrayList<Nodo> TablaArbol = new ArrayList<Nodo>();
+    public ArrayList<String> TablaNombreArbol = new ArrayList<String>();
     public ArrayList<String> auxSimbolo = new ArrayList<String>();
     //para transicion
     public ArrayList<String> A1 = new ArrayList();
@@ -23,7 +30,7 @@ public class AnalizadorArbol{
     public ArrayList<String> A3 = new ArrayList();
     public ArrayList<String> A4 = new ArrayList();
     public ArrayList<String> A5 = new ArrayList();
-    
+    //public String [][] tablaTransicion = new String[5][];
     public String [][] tablaFollow;
     public int contadorAr=0;
     public static int contArbol=0;
@@ -305,9 +312,8 @@ public class AnalizadorArbol{
         
         //para transiciones
         //calculo de transiciones
-        this.calculoTransicion(this.raiz);
-        
-        //diagramathis
+         this.conversionTablaTransicion();
+         this.generadorTablaTransicion(nombreexpresion);
         
         //validacion cadena
         
@@ -315,11 +321,11 @@ public class AnalizadorArbol{
         //GRAFICA DE ARBOL*************************
         this.graph = this.inicioGrap + this.raiz.getNodosEstructura()+"}\n";
         //graficar arbol
-        this.graficarArbol(graph);
+        this.graficarArbol(graph,nombreexpresion);
         this.graph="";
         
         //GRAFICA DE LA TABLA DE FOLLOW********************
-        this.graficarSuguiente(this.tablaFollow,this.contadornum);
+        this.graficarSuguiente(this.tablaFollow,this.contadornum,nombreexpresion);
         //System.out.println(inicioGrap);
         this.contadorid=0;
         //****************GUARDAR ARBOL***********************
@@ -330,22 +336,84 @@ public class AnalizadorArbol{
         this.contadornum =0;
         this.tablaFollow=null;
         this.auxSimbolo.clear();
-        
+        this.TB_SIGUIENTE.clear();
         //System.out.println(this.raiz.getNodosEstructura());
         System.out.println("FIN*********************************");
         //se agrega el . y el # al final del arbol  
     }
+    public void generadorTablaTransicion(String nombre){
+        T_TRANSICIONES TB_TRANS = new T_TRANSICIONES(this.raiz.first,this.TB_SIGUIENTE,nombre);
+        TB_TRANS.COLOCAR_CONJUNTOS_LEXEMAS(TB_CONJUNTO, TB_LEXEMA);
+        //TB_TRANS.ANALIZAR_Y_GENERAR_AUTOMATA();
+    }
     
-    public void calculoTransicion(Nodo nodo){
+    public void conversionTablaTransicion(){
+         //convertir el arreglo en una lista
+         
+        for (int j = 0; j < this.contadornum; j++) {//columna
+                TSiguiente tsig = new TSiguiente(this.tablaFollow[0][j],this.tablaFollow[1][j],this.tablaFollow[2][j]);
+                this.TB_SIGUIENTE.add(tsig);
+        }
+        
+    }
+    
+    public void calculoTransicion(Nodo nodo,int cont){
         String estado="S";
         int contadorEstado=0;
+        String estadoInicial = "S0";
         String estados=estado+""+Integer.toString(contadorEstado);
         String primero = nodo.first;
         String[] nodoIniciales = primero.replace("[", "").replace("]", "").split(",");//obteniendo cada hoja
+     
+        //buscar simbolo en tabla de follow---->>>INICIO DE LA OPERACION
+        // A1=Estados A2=Simbolos A3=Siguientes A4=Conjutnos A5=Estados
+        String anterior="";
+        String estadoAnterior="";
         
-        //primero
+        for (int i = 0; i < nodoIniciales.length; i++) {
+            
+            for (int j = 0; j < cont; j++) {
+                if(nodoIniciales[i].equals(this.tablaFollow[0][j])){
+                    
+                    this.A1.add(estadoInicial);//para guardar estado S0
+                    this.A2.add(this.tablaFollow[1][j]);//para guardar simbolo
+                    this.A3.add(nodoIniciales[i]);//para guardar siguiente
+                    //logica    
+                    
+                    if(this.validacionConjunto(this.tablaFollow[2][j])){// si exista ya conjunto, retorna true sino false
+                        this.A4.add(this.tablaFollow[2][j]);//para guardar conjunto
+                        this.A5.add(this.devEstado(this.tablaFollow[2][j]));
+                    }else{
+                        contadorEstado++;
+                        estados = estado+""+Integer.toString(contadorEstado);
+                        this.A4.add(this.tablaFollow[2][j]);//para guardar conjunto
+                        this.A5.add(estados);//para guardar Estado final
+                    }
+                    
+                }
+                
+            }
+        }
+      
+    }
+    
+    public boolean validacionConjunto(String conj){
+        for (int i = 0; i < this.A4.size(); i++) {
+            if(this.A4.get(i).equals(conj)){
+                return true;
+            }
+        }
         
-        
+        return false;
+    }
+    public String devEstado(String conj){
+        String res="";
+        for (int i = 0; i < this.A4.size(); i++) {
+            if(this.A4.get(i).equals(conj)){
+                res= this.A5.get(i);
+            }
+        }
+        return res;
     }
     
     public void limpiarArray(){
@@ -357,13 +425,28 @@ public class AnalizadorArbol{
         for (int i = 0; i < cont; i++) {
             String valor = follow[2][i];
             follow[2][i] = this.ordenarFollow(valor);
+            
         }
+        //seteo de #
+        follow[2][cont-1]="---";
     }
     
     public String ordenarFollow(String cadena){
+        String resultado="";
         String[] palabra = cadena.split(",");
         Arrays.sort(palabra);
-        String resultado = Arrays.toString(palabra);
+        //aqui el clavo
+        for (int i = 0; i < palabra.length; i++) {
+            if(i == (palabra.length-1)){
+                resultado+=palabra[i];
+            }else{
+                resultado+=palabra[i]+",";
+            }
+            
+        }
+         //= Arrays.toString(palabra);
+        //resultado.replace("[","").replace("]","");
+        System.out.println(resultado);
         return resultado;
     }
     
@@ -603,13 +686,13 @@ public class AnalizadorArbol{
         }
     }
     
-    public void graficarSuguiente(String [][]tabla,int contadornum){
+    public void graficarSuguiente(String [][]tabla,int contadornum,String nombre){
         contSiguiente++;
         FileWriter file = null;
         PrintWriter pw = null;
         
         try{
-            file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\Siguiente"+Integer.toString(contSiguiente)+".dot");
+            file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+nombre+".dot");
             pw = new PrintWriter(file);
             pw.println("digraph D {");
             pw.println("node [shape=plaintext]");
@@ -643,9 +726,9 @@ public class AnalizadorArbol{
             //direccion para dot.exe
             String dotpath = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
             //direccion del archivo .dot
-            String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\Siguiente"+Integer.toString(contSiguiente)+".dot";
+            String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+nombre+".dot";
             //direccion donde se creara el archivo .svg
-            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\Siguiente"+Integer.toString(contSiguiente)+".svg";
+            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+nombre+".svg";
             
             //tipo de conversón
             String tParam = "-Tsvg";
@@ -667,13 +750,13 @@ public class AnalizadorArbol{
         }
         
     }
-    public void graficarArbol(String codigoGraphviz){
+    public void graficarArbol(String codigoGraphviz,String nombre){
         contArbol++;
         FileWriter file = null;
         PrintWriter pw = null;
         
         try{
-        file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\Arbol"+Integer.toString(contArbol) +".dot");
+        file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+nombre+".dot");
         pw = new PrintWriter(file);
         pw.println(codigoGraphviz);
         }catch(Exception e){
@@ -692,9 +775,9 @@ public class AnalizadorArbol{
             //direccion para dot.exe
             String dotpath = "C:\\Program Files\\Graphviz\\bin\\dot.exe";
             //direccion del archivo .dot
-            String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\arbol"+Integer.toString(contArbol)+".dot";
+            String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+nombre+".dot";
             //direccion donde se creara el archivo .svg
-            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\arbol"+Integer.toString(contArbol)+".svg";
+            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+nombre+".svg";
             
             //tipo de conversón
             String tParam = "-Tsvg";

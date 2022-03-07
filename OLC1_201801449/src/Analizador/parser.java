@@ -6,7 +6,7 @@
 package Analizador;
 
 import java_cup.runtime.Symbol;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import Analizador.TError;
 import Analizador.TLexemas;
 import Analizador.TExpresiones;
@@ -271,10 +271,10 @@ public class parser extends java_cup.runtime.lr_parser {
 
 
     
-    public LinkedList<TError> TablaErrorSintactico = new LinkedList<TError>();
-    public LinkedList<TExpresiones> TablaExpresion = new LinkedList<TExpresiones>();
-    public LinkedList<TConjunto> TablaConjunto = new LinkedList<TConjunto>();
-    public LinkedList<TLexemas> TablaLexema = new LinkedList<TLexemas>();
+    public ArrayList<TError> TablaErrorSintactico = new ArrayList<TError>();
+    public ArrayList<TExpresiones> TablaExpresion = new ArrayList<TExpresiones>();
+    public ArrayList<TConjunto> TablaConjunto = new ArrayList<TConjunto>();
+    public ArrayList<TLexemas> TablaLexema = new ArrayList<TLexemas>();
 
     //VARIABLES QUE RECUPERAN LAS EXPRESIONES
     public String concatenaconjunto ="";
