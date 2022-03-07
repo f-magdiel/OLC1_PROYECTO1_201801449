@@ -30,7 +30,8 @@ import Arbol.AnalizadorArbol;
  */
 public class App extends javax.swing.JFrame {
     // listas
-   
+   public  ArrayList<TLexemas> lexema = new ArrayList<TLexemas>();
+   public ArrayList<TConjunto> conjunto = new ArrayList<TConjunto>();
     
     //variables para la lectura de archviso .exp
     public String ruta; // guarda la ruta
@@ -217,11 +218,13 @@ public class App extends javax.swing.JFrame {
             parser parser = new parser(scan);
             parser.parse();
             System.out.println("Finaliza analisis...");
-            
+            //pasar lista a una estatica
+            this.lexema = parser.TablaLexema;
+            this.conjunto = parser.TablaConjunto;
             for (int i = 0; i < parser.TablaExpresion.size(); i++) {
-                arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion(),parser.TablaExpresion.get(i).getNombre());
-                
+                arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion(),parser.TablaExpresion.get(i).getNombre(),this.lexema,this.conjunto);
             }
+            
             
         }catch(Exception ex){
             ex.printStackTrace();

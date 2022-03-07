@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import Maquina.Json;
-
+import App.App;
 /**
  *
  * @author magdiel
@@ -20,6 +20,7 @@ public class Automata {
     public  ArrayList<Json> json = new ArrayList<Json>();
     private ArrayList<TConjunto> CONJUNTOS=new ArrayList<TConjunto>();
     private ArrayList<TLexemas> LEXEMAS=new ArrayList<TLexemas>();
+    
     private ArrayList<F_TRANSICION> TMP_TABLA_TRANSICIONES=new ArrayList<F_TRANSICION>();
     private String NOMBRE_GRAFICAR="";
     private String Estado_Aceptacion="";
@@ -278,25 +279,47 @@ public class Automata {
         
         if(aceptacion){
             System.out.println("Aceptacion");
-            Json mac = new Json("{Valor: "+lexe+",\n","ExpresionRegular: "+NOMBRE_GRAFICAR+",\n","Resultado: Cadena valida");
+            Json mac = new Json(lexe,NOMBRE_GRAFICAR,"Cadena valida");
             this.json.add(mac);
         }else{
             System.out.println("No Aceptacion");
-            Json mac = new Json("{Valor: "+lexe+",\n","ExpresionRegular: "+NOMBRE_GRAFICAR+",\n","Resultado: Cadena no valida");
+            Json mac = new Json(lexe,NOMBRE_GRAFICAR,"Cadena no valida");
             this.json.add(mac);
         }
     }
     
     public void GENERADOR_JSON(){
+        String archivoJson="";
+        int tam = this.json.size();
         System.out.println("Gn");
         System.out.println(this.json.size());
         for (int i = 0; i < this.json.size(); i++) {
-            System.out.print("Valor: ");
-            System.out.println(this.json.get(i).getValor());
-            System.out.print("Expresion: ");
-            System.out.println(this.json.get(i).getExpresion());
-            System.out.print("Res: ");
-            System.out.println(this.json.get(i).getResultado());
+  
+            System.out.println("tamn");
+            System.out.println(i);
+            archivoJson+= "{\n\t\" Valor\": \""+this.json.get(i).getValor()+"\",\n\t\" ExpresionRegular\": \""+this.json.get(i).getExpresion()+"\",\n\t\" Resultado\": \""+this.json.get(i).getResultado()+"\"\n},\n";
+            
+        }
+        FileWriter file = null;
+        PrintWriter pw = null;
+        try{
+            System.out.println(archivoJson);
+            file = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SALIDAS_201801449\\Salidas.json");
+            pw = new PrintWriter(file);
+            pw.println("[\n");
+            pw.println(archivoJson);
+            pw.println("]");
+            
+        }catch(Exception e){
+            System.out.println("NO se pudo generar el archivo JSON");
+        }finally{
+            try {
+                if (null != file) {
+                    file.close();
+                }
+            } catch (Exception e2) {
+                e2.printStackTrace();
+            }
         }
     }
     

@@ -268,7 +268,9 @@ public class AnalizadorArbol{
         return nodo;
     }
     //************************************ANALIZADOR ER***********************
-    public void entradaAnalizador(String expresionregular,String nombreexpresion){
+    public void entradaAnalizador(String expresionregular,String nombreexpresion,ArrayList<TLexemas> lex,ArrayList<TConjunto>conj){
+        this.TB_LEXEMA = lex;
+        this.TB_CONJUNTO = conj;
         this.TablaNombreArbol.add(nombreexpresion); //guarda el nombre tanto de la expresion como del arbol
         String[] alfabeto = this.analizadorArbol(expresionregular);
        
