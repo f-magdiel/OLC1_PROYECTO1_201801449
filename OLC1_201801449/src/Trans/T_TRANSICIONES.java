@@ -19,16 +19,22 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import Maquina.*;
 
 /**
  *
  * @author USER
  */
 public class T_TRANSICIONES {
-    //ESTA CLASE VA A TENER UNA FILA DE TRANSICIONES(F_TRANSICION) PARA PODER TENER LA TABLA DE TRANSICIONES, ESTE DEVUELVE LA TABLA DE TRANSICIONES EL CUAL
-    //ES UN LISTADO DE FILA DE TRANSICIONES, ESTA CLASE SE INCIALIZA CON EL ESTADO S0 Y RECIBIENDO TAMBIEN LA TABLA DE SIGUIENTES
-    //PARA PODER GENERAR LA TABLA DE TRANSICIONES
+    
     public static  int num=0;
+    
+    private ArrayList<TSiguiente> TABLA_SIGUIENTES=new ArrayList<TSiguiente>();
+    //ESTA TABLA DE TRANSICIONES SE DEBE DEVOLVER AL ARBOL PARA QUE LO TENGA ALMACENADO UNA VEZ SE HALLA ARMADO LA TABLA DE TRANSICIONES
+    private ArrayList<F_TRANSICION> TABLA_TRANSICIONES=new ArrayList<F_TRANSICION>();
+    private ArrayList<TConjunto> TMP_CONJUNTOS=new ArrayList<TConjunto>();
+    private ArrayList<TLexemas> TMP_LEXEMAS=new ArrayList<TLexemas>();
+    private String NOMBRE_GRAFICAR="";
     
     public T_TRANSICIONES(String conjunto0,ArrayList<TSiguiente> ts,String nomG){
         TABLA_SIGUIENTES=ts;
@@ -36,13 +42,6 @@ public class T_TRANSICIONES {
         INICIALIZAR_CONJUNTO("", conjunto0);
     }
 
-    public void MOSTRAR_TABLA_SIGUIENTES_TRANSICIONES(){
-        /*
-        System.out.println("**********************MOSTRANDO LA TABLA DE SIGUIENTES DE LA CLASE TRANSICIONES ******************************");
-        for(int i=0; i<TABLA_SIGUIENTES.size(); i++){
-            System.out.println("VALOR HOJA: "+TABLA_SIGUIENTES.get(i).ValorHoja+" VALOR IDENTIFICADOR HOJA: "+TABLA_SIGUIENTES.get(i).Num_Identificador+"SIGUIENTES: "+TABLA_SIGUIENTES.get(i).Siguientes);
-        }*/
-    }
     
     public void INICIALIZAR_CONJUNTO(String Estado,String Conjunto){
         F_TRANSICION tempTransicion=new F_TRANSICION();
@@ -59,11 +58,7 @@ public class T_TRANSICIONES {
         ARMAR_CONJUNTOS_TABLA_TRANSICION();
         FORMALIZAR_TABLA_TRANSICIONES();
         GRAFICAR_TABLA_TRANSICIONES();
-        /*System.out.println("----------------MOSTRANDO PRIMEROS DATOS DE LA TABLA TRANSICIONES --------------------------------------");
-        for(int i=0; i<TABLA_TRANSICIONES.size(); i++){
-            System.out.println(TABLA_TRANSICIONES.get(i).OBTENER_ESTADO_CONJUNTO_IDENTIFICADO()+"-->"+TABLA_TRANSICIONES.get(i).OBTENER_LISTADO_TERMINAL_TRANSICION());
-           // TABLA_TRANSICIONES.get(i).MOSTRAR_TMP_SIGUIENTES2();
-        }*/
+        
     }
     
     private void ARMAR_CONJUNTOS_TABLA_TRANSICION(){
@@ -129,7 +124,7 @@ public class T_TRANSICIONES {
             TABLA_TRANSICIONES.get(i).GRAFICAR_TABLA_TRANSICIONES("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+NOMBRE_GRAFICAR+".dot",i);
         }
         CuerpoGrafica("</table>>];\n}","C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+NOMBRE_GRAFICAR+".dot" );
-        Graficar("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+NOMBRE_GRAFICAR+".dot", "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+NOMBRE_GRAFICAR+".svg");
+        Graficar("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+NOMBRE_GRAFICAR+".dot", "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+NOMBRE_GRAFICAR+".jpg");
     }
     
    
@@ -142,7 +137,7 @@ public class T_TRANSICIONES {
             String fileOutputPath = pathArbolImagen;
             
             //tipo de conversón
-            String tParam = "-Tsvg";
+            String tParam = "-Tjpg";
             String tOParam = "-o";
             
             String[] cmd = new String[5];
@@ -166,9 +161,6 @@ public class T_TRANSICIONES {
     private void inicioGrafica(String pathArbol,String primerTexto){
         try {
             FileWriter fichero1=new FileWriter(pathArbol);
-            
-           /*fichero1.write("digraph structs{ \n");
-            fichero1.write("node[shape=Mrecord];\n");*/
            fichero1.write(primerTexto);
            fichero1.close();
             
@@ -204,23 +196,13 @@ public class T_TRANSICIONES {
     }
     
     public void ANALIZAR_Y_GENERAR_AUTOMATA(){
-        //Automata AFD=new Automata(this.TMP_CONJUNTOS,this.TMP_LEXEMAS,TABLA_TRANSICIONES,NOMBRE_GRAFICAR,TABLA_SIGUIENTES.get(TABLA_SIGUIENTES.size()-1).Num_Identificador);
-        //AFD.IMPRIME_CONJUNTOS_LEXEMAS();
-        //AFD.IMPRIMIENDO_TABLA_TRANSICION();
-        //AFD.ANALIZAR_LEXEMAS_AUTOMATA();
-        //AFD.GRAFICAR_AUTOMATA();
+        Automata auto =new Automata(this.TMP_CONJUNTOS,this.TMP_LEXEMAS,TABLA_TRANSICIONES,NOMBRE_GRAFICAR,TABLA_SIGUIENTES.get(TABLA_SIGUIENTES.size()-1).hoja);
+        auto.ANALIZAR_LEXEMAS_AUTOMATA();
+        auto.GRAFICAR_AUTOMATA();
+        auto.GENERADOR_JSON();
     }
     
     
     
-    //----------------------------------------------------------
     
-    //***************************VARIABLES DE ESTA CLASE *********************
-    //ESTE LISTADO LO OBTENEMOS DE LA TABLA QUE NOS DEVUELVE EL ARBOL AL CUAL PERTENECE LA TABLA DE SIGUIENTES
-    private ArrayList<TSiguiente> TABLA_SIGUIENTES=new ArrayList<TSiguiente>();
-    //ESTA TABLA DE TRANSICIONES SE DEBE DEVOLVER AL ARBOL PARA QUE LO TENGA ALMACENADO UNA VEZ SE HALLA ARMADO LA TABLA DE TRANSICIONES
-    private ArrayList<F_TRANSICION> TABLA_TRANSICIONES=new ArrayList<F_TRANSICION>();
-    private ArrayList<TConjunto> TMP_CONJUNTOS=new ArrayList<TConjunto>();
-    private ArrayList<TLexemas> TMP_LEXEMAS=new ArrayList<TLexemas>();
-    private String NOMBRE_GRAFICAR="";
 }

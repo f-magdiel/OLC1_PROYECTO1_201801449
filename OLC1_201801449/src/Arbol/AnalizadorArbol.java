@@ -9,7 +9,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import Analizador.*;
 import Arbol.TSiguiente;
+import Maquina.Automata;
 import Trans.*;
+import Maquina.Json;
 /**
  *
  * @author magdiel
@@ -316,7 +318,7 @@ public class AnalizadorArbol{
          this.generadorTablaTransicion(nombreexpresion);
         
         //validacion cadena
-        
+       
         
         //GRAFICA DE ARBOL*************************
         this.graph = this.inicioGrap + this.raiz.getNodosEstructura()+"}\n";
@@ -341,10 +343,13 @@ public class AnalizadorArbol{
         System.out.println("FIN*********************************");
         //se agrega el . y el # al final del arbol  
     }
+    
+    
+    
     public void generadorTablaTransicion(String nombre){
         T_TRANSICIONES TB_TRANS = new T_TRANSICIONES(this.raiz.first,this.TB_SIGUIENTE,nombre);
         TB_TRANS.COLOCAR_CONJUNTOS_LEXEMAS(TB_CONJUNTO, TB_LEXEMA);
-        //TB_TRANS.ANALIZAR_Y_GENERAR_AUTOMATA();
+        TB_TRANS.ANALIZAR_Y_GENERAR_AUTOMATA();
     }
     
     public void conversionTablaTransicion(){
@@ -728,10 +733,10 @@ public class AnalizadorArbol{
             //direccion del archivo .dot
             String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+nombre+".dot";
             //direccion donde se creara el archivo .svg
-            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+nombre+".svg";
+            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+nombre+".jpg";
             
             //tipo de conversón
-            String tParam = "-Tsvg";
+            String tParam = "-Tjpg";
             String tOParam = "-o";
             
             String[] cmd = new String[5];
@@ -777,10 +782,10 @@ public class AnalizadorArbol{
             //direccion del archivo .dot
             String fileInputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+nombre+".dot";
             //direccion donde se creara el archivo .svg
-            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+nombre+".svg";
+            String fileOutputPath = "C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+nombre+".jpg";
             
             //tipo de conversón
-            String tParam = "-Tsvg";
+            String tParam = "-Tjpg";
             String tOParam = "-o";
             
             String[] cmd = new String[5];

@@ -18,6 +18,11 @@ import java.util.ArrayList;
  * @author USER
  */
 public class F_TRANSICION {
+    private OB_EC OBJ_ESTADO_CONJUNTO;
+    private boolean OBJ_VALIDACION;
+    private ArrayList<OB_TT> LISTADO_OBJ_TERMINAL_TRANSICION=new ArrayList<OB_TT>();
+    private ArrayList<TSiguiente> TEMP_TABLA_SIGUIENTES_2=new ArrayList<TSiguiente>();
+    private ArrayList<String> CONJUNTOS_NUEVOS=new ArrayList<String>();
     
     public void COLOCAR_ESTADO_CONJUNTO_IDENTIFICADOR(String estado,String conjunto){
         this.OBJ_ESTADO_CONJUNTO=new OB_EC(estado, conjunto);
@@ -229,9 +234,5 @@ public class F_TRANSICION {
     }
         
     
-    private OB_EC OBJ_ESTADO_CONJUNTO;
-    private boolean OBJ_VALIDACION;
-    private ArrayList<OB_TT> LISTADO_OBJ_TERMINAL_TRANSICION=new ArrayList<OB_TT>();
-    private ArrayList<TSiguiente> TEMP_TABLA_SIGUIENTES_2=new ArrayList<TSiguiente>();
-    private ArrayList<String> CONJUNTOS_NUEVOS=new ArrayList<String>();
+    
 }

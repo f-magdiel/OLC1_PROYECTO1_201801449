@@ -217,15 +217,6 @@ public class App extends javax.swing.JFrame {
             parser parser = new parser(scan);
             parser.parse();
             System.out.println("Finaliza analisis...");
-            for (int i = 0; i < parser.TablaLexema.size(); i++) {
-                System.out.println(parser.TablaLexema.get(i).getNombre());
-                System.out.println(parser.TablaLexema.get(i).getLexema());
-            }
-            
-            for (int i = 0; i < parser.TablaConjunto.size(); i++) {
-                System.out.println(parser.TablaConjunto.get(i).getNombre());
-                System.out.println(parser.TablaConjunto.get(i).getConjunto());
-            }
             
             for (int i = 0; i < parser.TablaExpresion.size(); i++) {
                 arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion(),parser.TablaExpresion.get(i).getNombre());
