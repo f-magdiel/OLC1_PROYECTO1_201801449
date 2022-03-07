@@ -23,6 +23,13 @@ import Analizador.TExpresiones;
 import Analizador.TError;
 import AFN.AnalizadorAFN;
 import Arbol.AnalizadorArbol;
+import java.awt.Image;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.ImageIcon;
 
 /**
  *
@@ -32,10 +39,22 @@ public class App extends javax.swing.JFrame {
     // listas
    public  ArrayList<TLexemas> lexema = new ArrayList<TLexemas>();
    public ArrayList<TConjunto> conjunto = new ArrayList<TConjunto>();
-    
+   public ArrayList<TError> errores = new ArrayList<TError>();
+   
+   public ArrayList<String> rutaafd = new ArrayList<String>();
+   public ArrayList<String> rutasig = new ArrayList<String>();
+   public ArrayList<String> rutatrans = new ArrayList<String>();
+   public ArrayList<String> rutaarbl = new ArrayList<String>();
+   public String opcion="";
+   public boolean banderaafd=false;
+   public boolean banderaarbl=false;
+   public boolean banderatrans=false;
+   public boolean banderasig=false;
+   public int contImage=0;
     //variables para la lectura de archviso .exp
     public String ruta; // guarda la ruta
     public LineasText lines; // libreria para linea
+    public LineasText line;
     public String texto=""; // texto cargado desde archivo
     
     
@@ -55,6 +74,11 @@ public class App extends javax.swing.JFrame {
         lines = new LineasText();
         jPanel1.add(lines,BorderLayout.WEST);
         jPanel1.add(lines.scrollPane,BorderLayout.CENTER);
+        
+        jPanel2.setLayout(new BorderLayout());
+        line = new LineasText();
+        jPanel2.add(line,BorderLayout.WEST);
+        jPanel2.add(line.scrollPane,BorderLayout.CENTER);
      
     }
 
@@ -69,9 +93,13 @@ public class App extends javax.swing.JFrame {
 
         jTabbedPane2 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
-        jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        jButton4 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
+        jComboBox1 = new javax.swing.JComboBox<>();
+        jLabel1 = new javax.swing.JLabel();
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        jPanel2 = new javax.swing.JPanel();
         jMenuBarPrincipal = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenuItemAbrir = new javax.swing.JMenuItem();
@@ -80,11 +108,13 @@ public class App extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
+        jPanel1.setPreferredSize(new java.awt.Dimension(512, 500));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 512, Short.MAX_VALUE)
+            .addGap(0, 806, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -93,8 +123,6 @@ public class App extends javax.swing.JFrame {
 
         jTabbedPane2.addTab("Archivo de entrada", jPanel1);
 
-        jButton1.setText("Generar Automata");
-
         jButton2.setText("Analizar Entrada");
         jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -102,12 +130,41 @@ public class App extends javax.swing.JFrame {
             }
         });
 
-        jButton3.setText("Generar Archivo");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        jButton4.setText("Anterior");
+        jButton4.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                jButton4ActionPerformed(evt);
             }
         });
+
+        jButton5.setText("Siguiente");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
+        jComboBox1.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "AFD", "ARBOLES", "SIGUIENTES", "TRANSICIONES" }));
+        jComboBox1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jComboBox1ActionPerformed(evt);
+            }
+        });
+
+        jLabel1.setText("jLabel1");
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 1280, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 138, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("tab1", jPanel2);
 
         jMenu2.setText("Abrir");
 
@@ -120,6 +177,11 @@ public class App extends javax.swing.JFrame {
         jMenu2.add(jMenuItemAbrir);
 
         jMenuItemGuardar.setText("Guardar");
+        jMenuItemGuardar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItemGuardarActionPerformed(evt);
+            }
+        });
         jMenu2.add(jMenuItemGuardar);
 
         jMenuItemGuardarcomo.setText("Guardar como");
@@ -138,29 +200,53 @@ public class App extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 514, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(560, Short.MAX_VALUE))
+                        .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 808, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 78, Short.MAX_VALUE)
+                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 433, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(171, 171, 171)
+                                .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 197, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(0, 0, Short.MAX_VALUE))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jTabbedPane1))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(199, 199, 199)
+                                .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(31, 31, 31)))
+                .addGap(41, 41, 41))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 463, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 463, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(42, 42, 42)
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(40, 40, 40)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 348, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(47, 47, 47)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton1)
                     .addComponent(jButton2)
-                    .addComponent(jButton3))
-                .addContainerGap(234, Short.MAX_VALUE))
+                    .addComponent(jButton4)
+                    .addComponent(jButton5))
+                .addGap(35, 35, 35)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(67, Short.MAX_VALUE))
         );
 
         pack();
@@ -169,10 +255,13 @@ public class App extends javax.swing.JFrame {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         // TODO add your handling code here:
         analizarEntrada();
+        impresionConsola();
+        
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jMenuItemGuardarcomoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGuardarcomoActionPerformed
         // TODO add your handling code here:
+        this.guardarComo();
     }//GEN-LAST:event_jMenuItemGuardarcomoActionPerformed
 
     private void jMenuItemAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAbrirActionPerformed
@@ -195,11 +284,105 @@ public class App extends javax.swing.JFrame {
 
     }//GEN-LAST:event_jMenuItemAbrirActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
+        this.Anterior();
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
+        // TODO add your handling code here:
+        this.opcion = jComboBox1.getSelectedItem().toString();
+        this.cargarImagen();
+    }//GEN-LAST:event_jComboBox1ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        // TODO add your handling code here:
+        this.Siguiente();
+    }//GEN-LAST:event_jButton5ActionPerformed
+
+    private void jMenuItemGuardarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemGuardarActionPerformed
+        // TODO add your handling code here:
+        this.guardar();
+    }//GEN-LAST:event_jMenuItemGuardarActionPerformed
     
     //**********************************METODOS***********************************
+    public void guardar(){
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        String texto="";
+        try{
+            fichero = new FileWriter(ruta);
+            pw = new PrintWriter(fichero);
+            texto = lines.pane.getText();
+            pw.println(texto);
+        }catch(Exception e){
+            e.printStackTrace();
+            System.out.println("Error al guardar archivo");
+        }finally{
+            try {
+           // Nuevamente aprovechamos el finally para 
+           // asegurarnos que se cierra el fichero.
+           if (null != fichero)
+              fichero.close();
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
+        }
+    }
+    
+    public void guardarComo(){
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        String texto="";
+        String pathd="";
+        JFileChooser file = new JFileChooser();
+        int res = file.showSaveDialog(this);
+        if(res==JFileChooser.APPROVE_OPTION){
+            pathd= file.getSelectedFile().getAbsolutePath();
+            try {
+                fichero = new FileWriter(pathd);
+                pw = new PrintWriter(fichero);
+                texto = lines.pane.getText();
+                pw.println(texto);
+            } catch (Exception e) {
+                System.out.println("Error al guardar como");
+                e.printStackTrace();
+            }finally{
+                try {
+           // Nuevamente aprovechamos el finally para 
+           // asegurarnos que se cierra el fichero.
+           if (null != fichero)
+              fichero.close();
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
+            }
+            
+        }
+        
+        
+        
+        
+    }
+    public void impresionConsola(){
+        String lineas="";
+        lineas+="Iniciando analisis.....\n";
+        if(this.errores.size()==0){
+            lineas+="No hay errores....\n";
+        }else{
+            for (int i = 0; i < this.errores.size(); i++) {
+            lineas+=this.errores.get(i).getTipo()+" \n";
+            lineas+=this.errores.get(i).getDescripcion()+" \n";
+            lineas+=this.errores.get(i).getLexema()+" \n";
+            lineas+=this.errores.get(i).getColumna()+" \n";
+            lineas+=this.errores.get(i).getLinea()+" \n";
+            
+        }
+        }
+        lineas+="Finalizando analisis.....\n";
+        line.pane.setText(lineas);
+        
+    }
     public void analizarEntrada(){
         if(!"".equals(lines.pane.getText())){
             this.texto = lines.pane.getText();
@@ -221,13 +404,202 @@ public class App extends javax.swing.JFrame {
             //pasar lista a una estatica
             this.lexema = parser.TablaLexema;
             this.conjunto = parser.TablaConjunto;
+            this.errores = parser.TablaErrorSintactico;
             for (int i = 0; i < parser.TablaExpresion.size(); i++) {
                 arbol.entradaAnalizador(parser.TablaExpresion.get(i).getExpresion(),parser.TablaExpresion.get(i).getNombre(),this.lexema,this.conjunto);
+                this.rutaafd.add("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\AFD_201801449\\"+parser.TablaExpresion.get(i).getNombre()+".jpg");//para AFD
+                this.rutaarbl.add("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\ARBOLES_201801449\\"+parser.TablaExpresion.get(i).getNombre()+".jpg");
+                this.rutasig.add("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\SIGUIENTES_201801449\\"+parser.TablaExpresion.get(i).getNombre()+".jpg");
+                this.rutatrans.add("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\TRANSICIONES_201801449\\"+parser.TablaExpresion.get(i).getNombre()+".jpg");
             }
+        
+            
             
             
         }catch(Exception ex){
             ex.printStackTrace();
+        }
+    }
+    
+    public void cargarImagen(){
+        
+        if(this.opcion.equals("AFD")){
+            System.out.println("AFD");
+            this.banderaafd = true;
+            this.banderaarbl = false;
+            this.banderasig = false;
+            this.banderatrans = false;
+            this.contImage=0;
+        }else if(this.opcion.equals("ARBOLES")){
+            System.out.println("ARBOLES");
+            this.banderaafd = false;
+            this.banderaarbl = true;
+            this.banderasig = false;
+            this.banderatrans = false;
+            this.contImage=0;
+        }else if(this.opcion.equals("TRANSICIONES")){
+            System.out.println("TRANSICIONES");
+            this.banderaafd = false;
+            this.banderaarbl = false;
+            this.banderasig = false;
+            this.banderatrans = true;
+            this.contImage=0;
+        }else if(this.opcion.equals("SIGUIENTES")){
+            System.out.println("SIGUIENTES");
+            this.banderaafd = false;
+            this.banderaarbl = false;
+            this.banderasig = true;
+            this.banderatrans = false;
+            this.contImage=0;
+        }
+        
+        this.mostrarImagen();
+    }
+    
+    public void mostrarImagen(){
+        if(this.banderaafd==true ){
+            Image miImagen = new ImageIcon(this.rutaafd.get(0)).getImage();
+            ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+            jLabel1.setIcon(miIcon);
+        }
+        
+        if(this.banderaarbl==true ){
+            Image miImagen = new ImageIcon(this.rutaarbl.get(0)).getImage();
+            ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+            jLabel1.setIcon(miIcon);
+        }
+        
+        if(this.banderasig==true ){
+            Image miImagen = new ImageIcon(this.rutasig.get(0)).getImage();
+            ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+            jLabel1.setIcon(miIcon);
+        }
+        
+        if(this.banderatrans ==true ){
+            Image miImagen = new ImageIcon(this.rutatrans.get(0)).getImage();
+            ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+            jLabel1.setIcon(miIcon);
+        }
+        
+        
+        
+        
+    
+    }
+    
+    public void Anterior(){
+        if(this.banderaafd ==true ){
+            if(this.contImage==0){
+                Image miImagen = new ImageIcon(this.rutaafd.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage--;
+                Image miImagen = new ImageIcon(this.rutaafd.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+        
+        if(this.banderaarbl ==true ){
+            if(this.contImage==0){
+                Image miImagen = new ImageIcon(this.rutaarbl.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage--;
+                Image miImagen = new ImageIcon(this.rutaarbl.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+        
+        if(this.banderasig ==true ){
+            if(this.contImage==0){
+                Image miImagen = new ImageIcon(this.rutasig.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage--;
+                Image miImagen = new ImageIcon(this.rutasig.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+        
+        if(this.banderatrans ==true ){
+            if(this.contImage==0){
+                Image miImagen = new ImageIcon(this.rutatrans.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage--;
+                Image miImagen = new ImageIcon(this.rutatrans.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+    }
+    
+    public void Siguiente(){
+        if(this.banderaafd ==true ){
+            if(this.contImage==(this.rutaafd.size()-1)){
+                Image miImagen = new ImageIcon(this.rutaafd.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage++;
+                Image miImagen = new ImageIcon(this.rutaafd.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+        
+        if(this.banderaarbl ==true ){
+            if(this.contImage==(this.rutaarbl.size()-1)){
+                Image miImagen = new ImageIcon(this.rutaarbl.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage++;
+                Image miImagen = new ImageIcon(this.rutaarbl.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+        
+        if(this.banderasig ==true ){
+            if(this.contImage==(this.rutasig.size()-1)){
+                Image miImagen = new ImageIcon(this.rutasig.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage++;
+                Image miImagen = new ImageIcon(this.rutasig.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
+        }
+        
+        if(this.banderatrans ==true ){
+            if(this.contImage==(this.rutatrans.size()-1)){
+                Image miImagen = new ImageIcon(this.rutatrans.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }else{
+                this.contImage++;
+                Image miImagen = new ImageIcon(this.rutatrans.get(this.contImage)).getImage();
+                ImageIcon miIcon = new ImageIcon(miImagen.getScaledInstance(jLabel1.getWidth(), jLabel1.getHeight(), Image.SCALE_SMOOTH));
+                jLabel1.setIcon(miIcon);
+            }
+            
         }
     }
     /**
@@ -266,15 +638,19 @@ public class App extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
+    private javax.swing.JComboBox<String> jComboBox1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBarPrincipal;
     private javax.swing.JMenuItem jMenuItemAbrir;
     private javax.swing.JMenuItem jMenuItemGuardar;
     private javax.swing.JMenuItem jMenuItemGuardarcomo;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
     // End of variables declaration//GEN-END:variables
 }

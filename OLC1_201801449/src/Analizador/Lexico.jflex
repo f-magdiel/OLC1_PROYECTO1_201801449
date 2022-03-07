@@ -1,4 +1,4 @@
-//importaciones
+    //importaciones
 package  Analizador;
 import java_cup.runtime.*;
 import java.util.LinkedList;
