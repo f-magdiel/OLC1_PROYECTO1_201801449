@@ -30,6 +30,7 @@ import java.io.PrintWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ImageIcon;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
@@ -265,6 +266,8 @@ public class App extends javax.swing.JFrame {
     private void jMenuItemAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItemAbrirActionPerformed
         JFileChooser abrir = new JFileChooser();
         abrir.showOpenDialog(abrir);
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("TEXT FILES", "exp");
+        abrir.setFileFilter(filter);
         try{
             this.ruta = abrir.getSelectedFile().getAbsolutePath();
             FileInputStream archivo = new FileInputStream(ruta);
