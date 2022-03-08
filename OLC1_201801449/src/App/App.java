@@ -101,6 +101,7 @@ public class App extends javax.swing.JFrame {
         jLabel1 = new javax.swing.JLabel();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel2 = new javax.swing.JPanel();
+        jButton1 = new javax.swing.JButton();
         jMenuBarPrincipal = new javax.swing.JMenuBar();
         jMenu2 = new javax.swing.JMenu();
         jMenuItemAbrir = new javax.swing.JMenuItem();
@@ -165,6 +166,13 @@ public class App extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Salida", jPanel2);
 
+        jButton1.setText("Tabla Error");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         jMenu2.setText("Abrir");
 
         jMenuItemAbrir.setText("Abrir");
@@ -220,6 +228,8 @@ public class App extends javax.swing.JFrame {
                                 .addGap(199, 199, 199)
                                 .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(146, 146, 146)
                                 .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
                                 .addComponent(jButton5, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -242,7 +252,8 @@ public class App extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton2)
                     .addComponent(jButton4)
-                    .addComponent(jButton5))
+                    .addComponent(jButton5)
+                    .addComponent(jButton1))
                 .addGap(35, 35, 35)
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 164, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(67, Short.MAX_VALUE))
@@ -305,8 +316,99 @@ public class App extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.guardar();
     }//GEN-LAST:event_jMenuItemGuardarActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+       
+        if(this.errores.size()==0){
+            JOptionPane.showMessageDialog(null, "!No hay Errores!");
+        }else{
+             this.generadorTablaError();
+            JOptionPane.showMessageDialog(null, "Tabla De Errores Generado");
+        }
+    }//GEN-LAST:event_jButton1ActionPerformed
     
     //**********************************METODOS***********************************
+    
+    public void generadorTablaError(){
+        //tipo,descripcion,lexema,col,lin
+        FileWriter fichero = null;
+        PrintWriter pw = null;
+        try{
+            fichero = new FileWriter("C:\\Users\\magdi\\Desktop\\OLC1_PROYECTO1_201801449\\OLC1_201801449\\Table_Responsive_v1\\index.html");
+            pw = new PrintWriter(fichero);
+            pw.println("<!DOCTYPE html>");
+            pw.println("<html lang=\"en\">");
+            pw.println("<head>");
+            pw.println("<title>Tabla De Errores</title>");
+            pw.println("<meta charset=\"UTF-8\">");
+            pw.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">");
+            pw.println("<link rel=\"icon\" type=\"image/png\" href=\"images/icons/favicon.ico\"/>");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"vendor/bootstrap/css/bootstrap.min.css\">");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"fonts/font-awesome-4.7.0/css/font-awesome.min.css\">");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"vendor/animate/animate.css\">");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"vendor/select2/select2.min.css\">");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"vendor/perfect-scrollbar/perfect-scrollbar.css\">");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/util.css\">");
+            pw.println("<link rel=\"stylesheet\" type=\"text/css\" href=\"css/main.css\">");
+            pw.println("</head>");
+            pw.println("<body>");
+            pw.println("<div class=\"limiter\">");
+            pw.println("<div class=\"container-table100\">");
+            pw.println("<div class=\"wrap-table100\">");
+            pw.println("<div class=\"table100\">");
+            pw.println("<table>");
+            pw.println("<thead>");
+            pw.println("<tr class=\"table100-head\">");
+            pw.println("<th class=\"column1\">No</th>");
+            pw.println("<th class=\"column2\">Tipo</th>");
+            pw.println("<th class=\"column3\">Descripcion</th>");
+            pw.println("<th class=\"column4\">Lexema</th>");
+            pw.println("<th class=\"column5\">Linea</th>");
+            pw.println("<th class=\"column6\">Columna</th>");
+            pw.println("</tr>");
+            pw.println("</thead>");
+            pw.println("<tbody>");
+            //for para mandar la info
+            
+            for (int i = 0; i < this.errores.size(); i++) {
+                pw.println("<tr>");
+                pw.println("<td class=\"column1\">"+Integer.toString(i)+"</td>");
+                pw.println("<td class=\"column2\">"+this.errores.get(i).getTipo()+"</td>");
+                pw.println("<td class=\"column3\">"+this.errores.get(i).getDescripcion()+"</td>");
+                pw.println("<td class=\"column4\">"+this.errores.get(i).getLexema()+"</td>");
+                pw.println("<td class=\"column5\">"+this.errores.get(i).getColumna()+"</td>");
+                pw.println("<td class=\"column6\">"+this.errores.get(i).getLinea()+"</td>");
+                pw.println("</tr>");
+            }
+            pw.println("</tbody>");
+            pw.println("</table>");
+            pw.println("</div>");
+            pw.println("</div>");
+            pw.println("</div>");
+            pw.println("</div>");
+            pw.println("<script src=\"vendor/jquery/jquery-3.2.1.min.js\"></script>");
+            pw.println("<script src=\"vendor/bootstrap/js/popper.js\"></script>");
+            pw.println("<script src=\"vendor/bootstrap/js/bootstrap.min.js\"></script>");
+            pw.println("<script src=\"vendor/select2/select2.min.js\"></script>");
+            pw.println("<script src=\"js/main.js\"></script>");
+            pw.println("</body>");
+            pw.println("</html>");
+   
+        }catch(Exception e){
+            System.out.println("Error al genere el HTML");
+            e.printStackTrace();
+        }finally{
+            try {
+           // Nuevamente aprovechamos el finally para 
+           // asegurarnos que se cierra el fichero.
+           if (null != fichero)
+              fichero.close();
+           } catch (Exception e2) {
+              e2.printStackTrace();
+           }
+        }
+    }
     public void guardar(){
         FileWriter fichero = null;
         PrintWriter pw = null;
@@ -639,6 +741,7 @@ public class App extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
